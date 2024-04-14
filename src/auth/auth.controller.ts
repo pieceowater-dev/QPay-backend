@@ -15,6 +15,7 @@ import { UserEntity } from '../users/entities/user.entity';
 import { AuthGuard } from './auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthTypes } from './enums/auth.types';
+import { RegistrationUserDto } from './dto/registration.user.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -25,6 +26,12 @@ export class AuthController {
   @Post('login')
   signIn(@Body() signInDto: AuthRequest): Promise<AuthResponse> {
     return this.authService.signIn(signInDto.email, signInDto.password);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('registration')
+  registration(@Body() registrationDto: RegistrationUserDto): Promise<'OK'> {
+    return this.authService.registration(registrationDto);
   }
 
   @UseGuards(AuthGuard)

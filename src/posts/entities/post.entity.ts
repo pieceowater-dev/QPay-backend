@@ -5,10 +5,10 @@ export class Post {
   id: number;
 
   @Column()
-  title: string;
+  name: string;
 
   @Column()
-  content: string;
+  address: string;
 
   @Column({ type: 'bigint', default: () => 'round(EXTRACT(epoch FROM now()))' })
   created: number;

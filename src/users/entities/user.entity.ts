@@ -1,21 +1,23 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
-
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { hashSync, genSaltSync } from 'bcrypt';
 @Entity('users')
 export class UserEntity {
-  @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty()
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
-  @ApiProperty()
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, unique: true })
   email: string;
 
-  @ApiProperty()
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, select: false })
   password: string;
+
+  @BeforeInsert()
+  passwordEncrypt() {
+    if (this.password !== undefined) {
+      this.password = hashSync(this.password, genSaltSync(12));
+    }
+  }
 }

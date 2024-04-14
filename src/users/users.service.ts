@@ -3,6 +3,7 @@ import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { PaginatedList } from '../utils/paginated.list';
 import getPaginated from '../utils/paginated.list.parse';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
@@ -12,7 +13,10 @@ export class UsersService {
   ) {}
 
   async findOneByEmail(email: string): Promise<UserEntity | undefined> {
-    return await this.userRepository.findOneBy({ email });
+    return await this.userRepository.findOne({
+      select: ['id', 'email', 'name', 'password'],
+      where: { email },
+    });
   }
 
   async findOneById(id: number): Promise<UserEntity | undefined> {
@@ -27,7 +31,7 @@ export class UsersService {
     return await this.userRepository.findAndCount().then(getPaginated);
   }
 
-  async save(user: UserEntity): Promise<UserEntity> {
-    return await this.userRepository.save(user);
+  async save(user: Partial<UserEntity>): Promise<UserEntity> {
+    return await this.userRepository.save(plainToInstance(UserEntity, user));
   }
 }
