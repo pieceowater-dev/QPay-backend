@@ -8,12 +8,21 @@ import { PostsModule } from './posts/posts.module';
 import { HealthController } from './health.controller';
 import { config } from './config';
 import { DatabaseModule } from './database/database.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
+    }),
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        global: true,
+        secret: configService.get<string>('SECRET_KEY'),
+        signOptions: { expiresIn: '60m' },
+      }),
     }),
     AuthModule,
     UsersModule,

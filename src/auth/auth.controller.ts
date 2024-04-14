@@ -12,7 +12,7 @@ import { AuthService } from './auth.service';
 import { AuthRequest } from './interfaces/auth.request';
 import { AuthResponse } from './interfaces/auth.response';
 import { UserEntity } from '../users/entities/user.entity';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from '../auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthTypes } from './enums/auth.types';
 import { RegistrationUserDto } from './dto/registration.user.dto';

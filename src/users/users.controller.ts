@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserEntity } from './entities/user.entity';
 import { PaginatedList } from '../utils/paginated.list';
@@ -6,9 +14,11 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthTypes } from '../auth/enums/auth.types';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
+import { AuthGuard } from '../auth.guard';
 
 @ApiTags('Users')
 @ApiBearerAuth(AuthTypes.JWT)
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
