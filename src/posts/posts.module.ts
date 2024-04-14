@@ -3,7 +3,6 @@ import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
 import { postProviders } from './post.provider';
 import { DatabaseModule } from '../database/database.module';
-import { JwtService } from '@nestjs/jwt';
 import { GlobalJwtModule } from '../jwt/jwt.module';
 
 @Module({

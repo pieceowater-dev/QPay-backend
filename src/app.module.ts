@@ -9,6 +9,7 @@ import { HealthController } from './health.controller';
 import { config } from './config';
 import { DatabaseModule } from './database/database.module';
 import { JwtModule } from '@nestjs/jwt';
+import { PostsWsModule } from './posts-ws/posts-ws.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { JwtModule } from '@nestjs/jwt';
     UsersModule,
     DatabaseModule,
     PostsModule,
+    PostsWsModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],

@@ -42,6 +42,11 @@ export class UsersController {
   }
 
   @Get('/:id')
+  async getUserById(@Param('id') id: number): Promise<UserEntity | undefined> {
+    return await this.usersService.findOneById(id);
+  }
+
+  @Get('/:id')
   async getUser(@Param('id') id: number): Promise<UserEntity> {
     return await this.usersService.findOneById(id);
   }
