@@ -11,5 +11,11 @@ export class Post {
   address: string;
 
   @Column({ type: 'bigint', default: () => 'round(EXTRACT(epoch FROM now()))' })
-  created: number;
+  created: string;
+
+  @Column({ type: 'bigint', nullable: true, default: null })
+  stopped: string;
+
+  @Column({ type: 'bigint', nullable: true, default: null })
+  deleted: string;
 }
