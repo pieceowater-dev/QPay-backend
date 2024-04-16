@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -15,6 +16,8 @@ import { AuthTypes } from '../auth/enums/auth.types';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
 import { AuthGuard } from '../auth.guard';
+import { DefaultFilter } from '../utils/default.filter';
+import { DefaultFilterPipe } from '../utils/default.filter.pipe';
 
 @ApiTags('Users')
 @ApiBearerAuth(AuthTypes.JWT)
@@ -37,8 +40,10 @@ export class UsersController {
   }
 
   @Get('')
-  async paginatedUserList(): Promise<PaginatedList<UserEntity>> {
-    return await this.usersService.findPaginatedMany();
+  async paginatedUserList(
+    @Query(DefaultFilterPipe) filter: DefaultFilter,
+  ): Promise<PaginatedList<UserEntity>> {
+    return await this.usersService.findPaginatedMany(filter);
   }
 
   @Get('/:id')

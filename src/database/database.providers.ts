@@ -16,6 +16,7 @@ export const databaseProviders = [
         username: configService.get<string>('db.username'),
         password: configService.get<string>('db.password'),
         database: configService.get<string>('db.database'),
+        logging: true,
       })
         .initialize()
         .then(async (source) => await databaseInit(source, configService)),

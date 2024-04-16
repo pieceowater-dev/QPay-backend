@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -14,6 +15,9 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthTypes } from '../auth/enums/auth.types';
 import { AuthGuard } from '../auth.guard';
+import { DefaultFilter } from '../utils/default.filter';
+import { PostEntity } from './entities/post.entity';
+import { DefaultFilterPipe } from '../utils/default.filter.pipe';
 
 @ApiTags('Posts')
 @UseGuards(AuthGuard)
@@ -28,8 +32,8 @@ export class PostsController {
   }
 
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  findAll(@Query(DefaultFilterPipe) filter: DefaultFilter) {
+    return this.postsService.findAll(filter);
   }
 
   @Get(':id')

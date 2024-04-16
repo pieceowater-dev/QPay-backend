@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { PaginatedList } from '../utils/paginated.list';
 import getPaginated from '../utils/paginated.list.parse';
 import { plainToInstance } from 'class-transformer';
+import { DefaultFilter } from '../utils/default.filter';
 
 @Injectable()
 export class UsersService {
@@ -27,8 +28,18 @@ export class UsersService {
     return await this.userRepository.find();
   }
 
-  async findPaginatedMany(): Promise<PaginatedList<UserEntity>> {
-    return await this.userRepository.findAndCount().then(getPaginated);
+  async findPaginatedMany(
+    filter: DefaultFilter,
+  ): Promise<PaginatedList<UserEntity>> {
+    return await this.userRepository
+      .findAndCount({
+        take: filter?.pagination?.take ?? 25,
+        skip: filter?.pagination?.skip ?? 0,
+        order: {
+          [filter?.sort?.field ?? 'id']: filter?.sort?.by ?? 'DESC',
+        },
+      })
+      .then(getPaginated);
   }
 
   async save(user: Partial<UserEntity>): Promise<UserEntity> {
