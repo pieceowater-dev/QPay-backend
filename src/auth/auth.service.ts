@@ -18,7 +18,9 @@ export class AuthService {
     if (user === undefined || !compareSync(pass, user?.password ?? '')) {
       throw new UnauthorizedException();
     }
-    return { token: await this.jwt.signAsync({ id: user.id }) };
+    return {
+      token: await this.jwt.signAsync({ id: user.id, role: user.role }),
+    };
   }
 
   async registration(registrationDto: RegistrationUserDto): Promise<'OK'> {

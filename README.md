@@ -4,6 +4,23 @@
 $ npm install
 ```
 
+### env
+```
+SECRET_KEY=super_secret_key_2
+
+PORT=80
+
+PG_HOST=localhost
+PG_USER=postgres
+PG_PORT=5432
+PG_PASSWORD=root
+PG_DATABASE=qpay
+
+ROOT_USER=admin
+ROOT_EMAIL=admin
+ROOT_PASSWORD=admin
+```
+
 ## Running the app
 
 ```bash

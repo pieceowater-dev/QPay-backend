@@ -6,8 +6,15 @@ interface DbConfiguration {
   database: string;
 }
 
+interface RootUser {
+  name: string;
+  email: string;
+  password: string;
+}
+
 export interface IConfig {
   secret: string;
   port: number;
   db: DbConfiguration;
+  root: RootUser;
 }

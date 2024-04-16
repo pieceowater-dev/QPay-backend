@@ -1,5 +1,6 @@
 import { DataSource } from 'typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { databaseInit } from './database.init';
 
 export const databaseProviders = [
   {
@@ -15,7 +16,9 @@ export const databaseProviders = [
         username: configService.get<string>('db.username'),
         password: configService.get<string>('db.password'),
         database: configService.get<string>('db.database'),
-      }).initialize(),
+      })
+        .initialize()
+        .then(async (source) => await databaseInit(source, configService)),
     inject: [ConfigService],
   },
 ];

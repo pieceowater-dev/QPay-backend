@@ -11,4 +11,9 @@ export const config = (): IConfig => ({
     password: process.env.PG_PASSWORD,
     database: process.env.PG_DATABASE,
   },
+  root: {
+    name: process.env.ROOT_USER,
+    email: process.env.ROOT_EMAIL,
+    password: process.env.ROOT_PASSWORD,
+  },
 });
