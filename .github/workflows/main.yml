@@ -37,20 +37,22 @@ jobs:
           echo ${{ needs.names-collect.outputs.GIT_SHA }}
   
   update-deployment:
-      needs: [names-collect]
-      runs-on: ubuntu-latest
-      timeout-minutes: 2
-      steps:
-        - name: Update Deployment & Save
-          run: |
-            git config --global user.email "pieceowater@gmail.com"
-            git config --global user.name "pieceowater"
-            git clone https://${{ vars.GH_NAME }}:${{ secrets.GH_PAT }}@github.com/pieceowater/QPay.git --recursive .
+    needs: [names-collect]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Update Deployment & Save
+        run: |
+          git config --global credential.helper store
+          git config --global user.email "pieceowater@gmail.com"
+          git config --global user.name "pieceowater"
+          git clone https://${{ secrets.GH_NAME }}:${{ secrets.GH_PAT }}@github.com/pieceowater/QPay.git --recursive .
+  
+          git submodule update --remote --recursive
+  
+          sed -i '' "s|${{ needs.names-collect.outputs.REPO_NAME }}:i-.*|${{ needs.names-collect.outputs.REPO_NAME }}:i-${{ needs.names-collect.outputs.GIT_SHA }}|g" docker-compose.yml
+  
+          git add "docker-compose.yml"
+          git commit -m "Update ${{ needs.names-collect.outputs.REPO_NAME }} image to ${{ needs.names-collect.outputs.GIT_SHA }}"
+          git push
 
-            git submodule update --remote --recursive
-
-            sed -i '' "s|${{ needs.names-collect.outputs.REPO_NAME }}:i-.*|${{ needs.names-collect.outputs.REPO_NAME }}:i-${{ needs.names-collect.outputs.GIT_SHA }}|g" docker-compose.yml
-
-            git add "docker-compose.yml"
-            git commit -m "Update ${{ needs.names-collect.outputs.REPO_NAME }} image to ${{ needs.names-collect.outputs.GIT_SHA }}"
-            git push
