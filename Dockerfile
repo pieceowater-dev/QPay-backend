@@ -1,20 +1,27 @@
-FROM node:21-alpine
-
-# Set the working directory in the container
-WORKDIR /app
-
-# Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy the rest of the application code to the working directory
-COPY . .
-
-# Expose the port the app runs on
-EXPOSE 3000
-
-# Command to run the application
-CMD ["npm", "run", "start:prod"]
-
+# Stage 1: Build Stage --------------------------------------
+    FROM node:21-alpine as build
+    
+    WORKDIR /app
+    
+    COPY package*.json ./
+    
+    RUN npm install
+        
+    COPY . .
+    
+    RUN npm run build
+    
+    # Stage 2: Production Stage --------------------------------------
+    FROM node:21-alpine
+    
+    WORKDIR /app
+    
+    COPY package*.json ./
+    
+    RUN npm install --omit=dev
+    
+    COPY --from=build /app/dist .
+    
+    EXPOSE 3000
+    
+    CMD ["node", "main"]
