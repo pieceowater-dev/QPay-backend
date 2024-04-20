@@ -1,0 +1,151 @@
+name: Update Main Repo
+
+on:
+  push:
+    branches:
+      - main
+      
+  workflow_dispatch:
+
+jobs:
+  names-collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    outputs:
+      REPO_NAME: ${{ steps.get-repo.outputs.repo_name }}
+      # GIT_BRANCH: ${{ steps.get-branch.outputs.branch }}
+      GIT_SHA: ${{ steps.get-sha.outputs.sha }}
+      # APP_VERSION: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.1.1
+
+      - name: Get the repo name
+        id: get-repo
+        run: echo "repo_name=$(echo "${{ github.repository }}" | cut -d '/' -f 2 | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      # - name: Get the branch name
+      #   id: get-branch
+      #   run: echo "branch=$(echo ${{ github.ref }} | tr '/' '\n' | tail -1)" >> $GITHUB_OUTPUT
+
+      - name: Get the commit sha
+        id: get-sha
+        run: echo "sha=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+
+      # - name: Get Latest Release
+      #   id: GetLatestRelease
+      #   uses: actions/github-script@v4.0.0
+      #   with:
+      #     script: |
+      #       const { data } = await github.repos.listReleases({
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo
+      #       });
+      #       const branch = "${{ steps.get-branch.outputs.branch }}";
+      #       const matchingReleases = data.filter(release => release.tag_name.startsWith(branch + '-'));
+
+      #       let latestVersion = { major: 0, minor: 0, patch: 0 };
+
+      #       matchingReleases.forEach(release => {
+      #         const versionNumbers = release.tag_name.split('-')[1].split('.').map(Number);
+      #         if (versionNumbers[0] > latestVersion.major) {
+      #           latestVersion = { major: versionNumbers[0], minor: versionNumbers[1], patch: versionNumbers[2] };
+      #         } else if (versionNumbers[1] > latestVersion.minor && versionNumbers[0] === latestVersion.major) {
+      #           latestVersion = { major: versionNumbers[0], minor: versionNumbers[1], patch: versionNumbers[2] };
+      #         } else if (versionNumbers[2] > latestVersion.patch && versionNumbers[0] === latestVersion.major && versionNumbers[1] === latestVersion.minor) {
+      #           latestVersion = { major: versionNumbers[0], minor: versionNumbers[1], patch: versionNumbers[2] };
+      #         }
+      #       });
+
+      #       const latestRelease = `${branch}-${latestVersion.major}.${latestVersion.minor}.${latestVersion.patch}`;
+      #       return latestRelease;
+
+      # - name: Increment Version
+      #   id: version
+      #   run: |
+      #     echo "version=$(echo $(echo $(echo "${{ steps.GetLatestRelease.outputs.result }}" | tr -cd '[:digit:].') | awk -F. -v OFS=. '{ if (NF < 2) { print $0 ".1" } else { $3++; print } }'))" >> $GITHUB_OUTPUT
+
+  names-checkout:
+    needs: [names-collect]
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Output
+        run: |
+          echo ${{ needs.names-collect.outputs.REPO_NAME }}
+          # echo ${{ needs.names-collect.outputs.GIT_BRANCH }}
+          echo ${{ needs.names-collect.outputs.GIT_SHA }}
+          # echo ${{ needs.names-collect.outputs.APP_VERSION }}
+
+  # create-release:
+  #     needs:  [names-collect]
+  #     runs-on: ubuntu-latest
+  #     timeout-minutes: 2
+  #     steps:
+  #       - name: Checkout code
+  #         uses: actions/checkout@v4.1.1
+
+  #       - name: Create GitHub release
+  #         uses: actions/create-release@v1.1.4
+  #         id: create_release
+  #         env:
+  #           GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+  #         with:
+  #           tag_name: ${{ needs.names-collect.outputs.GIT_BRANCH }}-${{ needs.names-collect.outputs.APP_VERSION }}
+  #           release_name: Release v${{ needs.names-collect.outputs.APP_VERSION }} (${{ needs.names-collect.outputs.GIT_BRANCH }})
+  #           body: |
+  #               ```
+  #               ${{ vars.CRM_CONTAINER_REGISTRY_ADDRESS }}/${{ needs.names-collect.outputs.REPO_NAME }}:${{ needs.names-collect.outputs.GIT_BRANCH }}-latest
+  #               ```
+  #               ```
+  #               ${{ vars.CRM_CONTAINER_REGISTRY_ADDRESS }}/${{ needs.names-collect.outputs.REPO_NAME }}:${{ needs.names-collect.outputs.GIT_BRANCH }}-${{ needs.names-collect.outputs.APP_VERSION }}
+  #               ```
+  #           draft: false
+  #           prerelease: false
+  #         if: github.event_name == 'push'
+
+  # build-and-push:
+  #   needs: names-collect
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 4
+  #   environment: ${{ needs.names-collect.outputs.GIT_BRANCH }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4.1.1
+
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v3.0.0
+  #       with:
+  #         username: ${{ vars.CRM_CONTAINER_REGISTRY_ADDRESS }}
+  #         password: ${{ secrets.CRM_CONTAINER_REGISTRY_ACCESS_TOKEN }}
+
+  #     - name: Build and Push Docker Image
+  #       uses: docker/build-push-action@v5.1.0
+  #       with:
+  #         context: .
+  #         push: true
+  #         tags: |
+  #           ${{ vars.CRM_CONTAINER_REGISTRY_ADDRESS }}/${{ needs.names-collect.outputs.REPO_NAME }}:${{ needs.names-collect.outputs.GIT_BRANCH }}-${{ needs.names-collect.outputs.APP_VERSION }}
+  #           ${{ vars.CRM_CONTAINER_REGISTRY_ADDRESS }}/${{ needs.names-collect.outputs.REPO_NAME }}:${{ needs.names-collect.outputs.GIT_BRANCH }}-latest
+  #         build-args: |
+  #           BUILD_MODE=${{ needs.names-collect.outputs.GIT_BRANCH }}
+  
+  update-deployment:
+      # needs: [names-collect, create-release, build-and-push]
+      needs: [names-collect]
+      runs-on: ubuntu-latest
+      timeout-minutes: 2
+      steps:
+        - name: Run Script
+          run: |
+            git clone https://${{ secrets.GH_NAME }}:${{ secrets.GH_PAT }}@github.com/pieceowater/QPay.git --recursive .
+            git config --global user.email "pieceowater@gmail.com"
+            git config --global user.name "pieceowater"
+
+            git submodule update --remote --recursive
+
+            sed -i '' "s|${{ needs.names-collect.outputs.REPO_NAME }}:i-.*|${{ needs.names-collect.outputs.REPO_NAME }}:i-${{ needs.names-collect.outputs.GIT_SHA }}|g" docker-compose.yml
+
+            git add "docker-compose.yml"
+            git commit -m "Update ${{ needs.names-collect.outputs.REPO_NAME }} image to ${{ needs.names-collect.outputs.GIT_SHA }}"
+            git push
