@@ -138,7 +138,7 @@ jobs:
       steps:
         - name: Run Script
           run: |
-            git clone https://${{ secrets.GH_NAME }}:${{ secrets.GH_PAT }}@github.com/pieceowater/QPay.git --recursive .
+            git clone https://${{ vars.GH_NAME }}:${{ secrets.GH_PAT }}@github.com/pieceowater/QPay.git --recursive .
             git config --global user.email "pieceowater@gmail.com"
             git config --global user.name "pieceowater"
 
