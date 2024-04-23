@@ -23,7 +23,7 @@ jobs:
 
     - name: Clone parent repo
       run: |
-        git clone https://${{ vars.GH_NAME }}:${{ secrets.GH_PAT }}@github.com/pieceowater/QPay.git parent_repo
+        git clone https://github.com/pieceowater/QPay.git parent_repo
 
     - name: Update submodule in parent repo
       run: |
