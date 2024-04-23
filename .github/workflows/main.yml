@@ -20,6 +20,7 @@ jobs:
         echo "${{ secrets.GIT_ASKPASS_SCRIPT }}" > ~/git-askpass.sh
         chmod +x ~/git-askpass.sh
         export GIT_ASKPASS=~/git-askpass.sh
+        git config --global credential.helper store
 
     - name: Clone parent repo
       run: |
