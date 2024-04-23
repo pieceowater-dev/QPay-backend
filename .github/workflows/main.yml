@@ -17,6 +17,9 @@ jobs:
       run: |
         git config --global user.name "pieceowater"
         git config --global user.email "pieceowater@gmail.com"
+        echo "${{ secrets.GIT_ASKPASS_SCRIPT }}" > ~/git-askpass.sh
+        chmod +x ~/git-askpass.sh
+        export GIT_ASKPASS=~/git-askpass.sh
 
     - name: Clone parent repo
       run: |
@@ -25,12 +28,9 @@ jobs:
     - name: Update submodule in parent repo
       run: |
         cd parent_repo
+        git submodule update --init --recursive
+        git config --file .gitmodules submodule.QPay-backend.url "https://${{ secrets.GH_NAME }}:${{ secrets.GH_PAT }}@github.com/pieceowater/QPay-backend.git"
         git submodule update --remote --recursive --init --quiet
-        # Set up authentication for the submodule
-        git config --global credential.helper 'store --file ~/.git-credentials'
-        echo "https://${{ secrets.GH_NAME }}:${{ secrets.GH_PAT }}" > ~/.git-credentials
-        git submodule update --remote --init --recursive
-        git config --global --unset credential.helper
         
     - name: Add and commit submodule changes
       run: |
