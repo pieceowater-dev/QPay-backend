@@ -13,11 +13,27 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Update parent repo
+    - name: Configure Git
       run: |
-        cd ..
         git config --global user.name "pieceowater"
         git config --global user.email "pieceowater@gmail.com"
+
+    - name: Clone parent repo
+      run: |
+        git clone https://github.com/pieceowater/QPay.git parent_repo
+
+    - name: Update submodule in parent repo
+      run: |
+        cd parent_repo
+        git submodule update --remote
+
+    - name: Add and commit submodule changes
+      run: |
+        cd parent_repo
         git add .
-        git commit -m "$(echo "${{ github.repository }}" | cut -d '/' -f 2')"
-        git push origin main 
+        git commit -m "${{ github.repository }}"
+    
+    - name: Push changes to parent repo
+      run: |
+        cd parent_repo
+        git push origin main
