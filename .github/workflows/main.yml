@@ -15,12 +15,12 @@ jobs:
 
     - name: Configure Git
       run: |
+        git config --global credential.helper store
         git config --global user.name "pieceowater"
         git config --global user.email "pieceowater@gmail.com"
         echo "${{ secrets.GIT_ASKPASS_SCRIPT }}" > ~/git-askpass.sh
         chmod +x ~/git-askpass.sh
         export GIT_ASKPASS=~/git-askpass.sh
-        git config --global credential.helper store
 
     - name: Clone parent repo
       run: |
