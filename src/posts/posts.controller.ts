@@ -16,7 +16,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthTypes } from '../auth/enums/auth.types';
 import { AuthGuard } from '../auth.guard';
 import { DefaultFilter } from '../utils/default.filter';
-import { PostEntity } from './entities/post.entity';
 import { DefaultFilterPipe } from '../utils/default.filter.pipe';
 
 @ApiTags('Posts')

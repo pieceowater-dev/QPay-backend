@@ -10,6 +10,7 @@ import { config } from './config';
 import { DatabaseModule } from './database/database.module';
 import { JwtModule } from '@nestjs/jwt';
 import { PostsWsModule } from './posts-ws/posts-ws.module';
+import { KaspiapiModule } from './kaspiapi/kaspiapi.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PostsWsModule } from './posts-ws/posts-ws.module';
     DatabaseModule,
     PostsModule,
     PostsWsModule,
+    KaspiapiModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
