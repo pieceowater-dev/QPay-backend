@@ -1,45 +1,33 @@
-name: Update Parent Repo
+name: Build and Push Docker Image to AWS ECR
 
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
-  update_parent_repo:
+  build_and_push:
+    name: Build and Push
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Configure Git
-      run: |
-        git config --global credential.helper store
-        git config --global user.name "pieceowater"
-        git config --global user.email "pieceowater@gmail.com"
-        echo "${{ secrets.GIT_ASKPASS_SCRIPT }}" > ~/git-askpass.sh
-        chmod +x ~/git-askpass.sh
-        export GIT_ASKPASS=~/git-askpass.sh
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          region: eu-north-1
+          registry: 058264184974.dkr.ecr.eu-north-1.amazonaws.com
 
-    - name: Clone parent repo
-      run: |
-        git clone https://github.com/pieceowater/QPay.git parent_repo
+      - name: Build Docker image
+        run: |
+          docker build -t 058264184974.dkr.ecr.eu-north-1.amazonaws.com/qpay-backend:latest .
 
-    - name: Update submodule in parent repo
-      run: |
-        cd parent_repo
-        git submodule update --init --recursive
-        git config --file .gitmodules submodule.QPay-backend.url "https://${{ secrets.GH_NAME }}:${{ secrets.GH_PAT }}@github.com/pieceowater/QPay-backend.git"
-        git submodule update --remote --recursive --init --quiet
-        
-    - name: Add and commit submodule changes
-      run: |
-        cd parent_repo
-        git add .
-        git commit -m "${{ github.repository }}"
-    
-    - name: Push changes to parent repo
-      run: |
-        cd parent_repo
-        git push origin main
+      - name: Push Docker image to ECR
+        run: |
+          docker push 058264184974.dkr.ecr.eu-north-1.amazonaws.com/qpay-backend:latest
+
+      - name: Logout of AWS ECR
+        run: aws ecr get-login-password --region eu-north-1 | docker logout https://$(aws sts get-caller-identity --query 'Account' --output text).dkr.ecr.eu-north-1.amazonaws.com
