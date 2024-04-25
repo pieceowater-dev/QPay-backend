@@ -14,20 +14,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Configure AWS credentials
+        run: |
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set region $AWS_REGION
+
       - name: Login to AWS ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          region: eu-north-1
-          registry: 058264184974.dkr.ecr.eu-north-1.amazonaws.com
+        run: aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
       - name: Build Docker image
         run: |
-          docker build -t 058264184974.dkr.ecr.eu-north-1.amazonaws.com/qpay-backend:latest .
+          docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest .
 
       - name: Push Docker image to ECR
         run: |
-          docker push 058264184974.dkr.ecr.eu-north-1.amazonaws.com/qpay-backend:latest
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest
 
       - name: Logout of AWS ECR
-        run: aws ecr get-login-password --region eu-north-1 | docker logout https://$(aws sts get-caller-identity --query 'Account' --output text).dkr.ecr.eu-north-1.amazonaws.com
+        run: docker logout $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
