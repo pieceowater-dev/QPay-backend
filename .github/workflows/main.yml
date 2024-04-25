@@ -44,5 +44,5 @@ jobs:
           script: |
             cp docker-compose-sample.yml docker-compose.yml
             sed -i 's|{{ IMAGE_URI }}|${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}:${{ github.sha }}|g' docker-compose.yml
-            # rm docker-compose.yml
-            # docker stack deploy -c docker-compose.yml qpay
+            rm docker-compose.yml
+            docker stack deploy -c docker-compose.yml qpay
