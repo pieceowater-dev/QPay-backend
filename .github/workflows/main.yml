@@ -33,3 +33,13 @@ jobs:
 
       - name: Logout of AWS ECR
         run: docker logout ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
+
+      - name: SSH into EC2 instance and run ls
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.EC2_PUBLIC_DNS }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            ls
