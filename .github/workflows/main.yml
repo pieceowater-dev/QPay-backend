@@ -1,45 +1,55 @@
-name: Update Parent Repo
+name: Build and Push Docker Image to AWS ECR
 
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
-  update_parent_repo:
+  build_and_push:
+    name: Build and Push
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Configure Git
-      run: |
-        git config --global credential.helper store
-        git config --global user.name "pieceowater"
-        git config --global user.email "pieceowater@gmail.com"
-        echo "${{ secrets.GIT_ASKPASS_SCRIPT }}" > ~/git-askpass.sh
-        chmod +x ~/git-askpass.sh
-        export GIT_ASKPASS=~/git-askpass.sh
+      - name: Configure AWS credentials
+        timeout-minutes: 1
+        run: |
+          aws configure set aws_access_key_id ${{ vars.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region ${{ vars.AWS_REGION }}
 
-    - name: Clone parent repo
-      run: |
-        git clone https://github.com/pieceowater/QPay.git parent_repo
+      - name: Login to AWS ECR
+        timeout-minutes: 1
+        run: aws ecr get-login-password --region ${{ vars.AWS_REGION }} | docker login --username AWS --password-stdin ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
 
-    - name: Update submodule in parent repo
-      run: |
-        cd parent_repo
-        git submodule update --init --recursive
-        git config --file .gitmodules submodule.QPay-backend.url "https://${{ secrets.GH_NAME }}:${{ secrets.GH_PAT }}@github.com/pieceowater/QPay-backend.git"
-        git submodule update --remote --recursive --init --quiet
-        
-    - name: Add and commit submodule changes
-      run: |
-        cd parent_repo
-        git add .
-        git commit -m "${{ github.repository }}"
-    
-    - name: Push changes to parent repo
-      run: |
-        cd parent_repo
-        git push origin main
+      - name: Build Docker image
+        timeout-minutes: 3
+        run: |
+          docker build -t ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}:${{ github.sha }} .
+
+      - name: Push Docker image to ECR
+        timeout-minutes: 2
+        run: |
+          docker push ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}:${{ github.sha }}
+
+      - name: Logout of AWS ECR
+        timeout-minutes: 1
+        run: docker logout ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com
+
+      - name: SSH into EC2 instance and run ls
+        timeout-minutes: 5
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.EC2_PUBLIC_DNS }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            cp docker-compose-sample.yml docker-compose.yml
+            sed -i 's|{{ IMAGE_URI }}|${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}:${{ github.sha }}|g' docker-compose.yml
+            sudo docker pull ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.ECR_REPOSITORY }}:${{ github.sha }}
+            sudo docker stack deploy -c docker-compose.yml qpay
+            rm docker-compose.yml
