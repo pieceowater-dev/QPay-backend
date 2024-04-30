@@ -2,16 +2,22 @@ import {
   WebSocketGateway,
   SubscribeMessage,
   MessageBody,
+  WsResponse,
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { PostsWsService } from './posts-ws.service';
-import { OnPayDto } from './dto/on-pay.dto';
+import { SubscribeDTO } from './dto/subscribe.dto';
+import { Socket } from 'socket.io';
 
 @WebSocketGateway()
 export class PostsWsGateway {
   constructor(private readonly postsWsService: PostsWsService) {}
 
-  @SubscribeMessage('on-pay')
-  onPay(@MessageBody() onPayDto: OnPayDto) {
-    return this.postsWsService.onPay(onPayDto);
+  @SubscribeMessage('subscribe')
+  subscribe(
+    @MessageBody() subscribeDTO: SubscribeDTO,
+    @ConnectedSocket() client: Socket,
+  ): WsResponse<'OK'> {
+    return this.postsWsService.subscribe(subscribeDTO, client);
   }
 }

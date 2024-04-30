@@ -1,9 +1,9 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { KaspiapiService } from './kaspiapi.service';
-import { RequestKaspiDto } from './dto/request.kaspi.dto';
 import { ResponseKaspiDto } from './dto/response.kaspi.dto';
 import { CheckRequestKaspiDto } from './dto/check.request.kaspi.dto';
 import { PayRequestKaspiDto } from './dto/pay.request.kaspi.dto';
+import { KaspiapiPipeTransform } from './kaspiapi.pipe.transform';
 
 // TODO настроить cors на GET 194.187.247.152
 // Интерфейс должен принимать запросы по протоколу HTTPS с IP-адресов подсети: 194.187.247.152
@@ -19,7 +19,10 @@ export class KaspiapiController {
   constructor(private readonly kaspiapiService: KaspiapiService) {}
 
   @Get('')
-  request(@Query() requestKaspiDto: RequestKaspiDto): ResponseKaspiDto {
+  request(
+    @Query(KaspiapiPipeTransform)
+    requestKaspiDto: CheckRequestKaspiDto | PayRequestKaspiDto,
+  ): ResponseKaspiDto {
     switch (requestKaspiDto.command) {
       case 'check':
         return this.kaspiapiService.check(
