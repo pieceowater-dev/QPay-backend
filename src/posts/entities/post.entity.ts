@@ -13,9 +13,9 @@ export class PostEntity {
   @Column({ type: 'bigint', default: () => 'round(EXTRACT(epoch FROM now()))' })
   created: string;
 
-  @Column({ type: 'bigint', nullable: true, default: null })
-  stopped: string;
+  @Column({ type: 'boolean', nullable: true, default: null })
+  stopped: boolean;
 
-  @Column({ type: 'bigint', nullable: true, default: null })
-  deleted: string;
+  @Column({ type: 'boolean', nullable: true, default: null })
+  deleted: boolean;
 }

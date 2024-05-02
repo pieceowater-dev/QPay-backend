@@ -10,7 +10,7 @@ export interface PayRequestKaspiDto {
   /**
    * внутренний номер запроса в системе Kaspi.kz
    * */
-  txn_id: number;
+  txn_id: string;
 
   /**
    * дата учета платежа в системе kaspi.kz
@@ -26,7 +26,7 @@ export interface PayRequestKaspiDto {
   /**
    * идентификатор абонента/номера заказа в информационной системе провайдера
    * */
-  account: number;
+  account: string;
 
   /**
    * сумма к зачислению на лицевой счет абонента
@@ -44,5 +44,5 @@ export interface PayRequestKaspiDto {
    *
    * (EXAMPLE) data1,data2,…,dataN
    * */
-  extra: Record<string, string>;
+  extra: string;
 }

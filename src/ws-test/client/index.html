@@ -55,5 +55,9 @@
         console.log(args)
         chatBody.appendChild(createChatRow(`[${args.userType}-${args.user}] ${args.value}`))
     })
+
+    socket.on('kaspi-check', (args) => {
+        socket.emit('kaspi-check', args)
+    })
 </script>
 </html>

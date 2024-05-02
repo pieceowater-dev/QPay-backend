@@ -4,6 +4,7 @@ import { ResponseKaspiDto } from './dto/response.kaspi.dto';
 import { CheckRequestKaspiDto } from './dto/check.request.kaspi.dto';
 import { PayRequestKaspiDto } from './dto/pay.request.kaspi.dto';
 import { KaspiapiPipeTransform } from './kaspiapi.pipe.transform';
+import { RequestKaspiDto } from './dto/request.kaspi.dto';
 
 // TODO настроить cors на GET 194.187.247.152
 // Интерфейс должен принимать запросы по протоколу HTTPS с IP-адресов подсети: 194.187.247.152
@@ -19,10 +20,10 @@ export class KaspiapiController {
   constructor(private readonly kaspiapiService: KaspiapiService) {}
 
   @Get('')
-  request(
+  async request(
     @Query(KaspiapiPipeTransform)
-    requestKaspiDto: CheckRequestKaspiDto | PayRequestKaspiDto,
-  ): ResponseKaspiDto {
+    requestKaspiDto: RequestKaspiDto,
+  ): Promise<ResponseKaspiDto> {
     switch (requestKaspiDto.command) {
       case 'check':
         return this.kaspiapiService.check(

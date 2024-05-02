@@ -1,16 +1,20 @@
-export interface RequestKaspiDto {
+import { ApiProperty } from '@nestjs/swagger';
+
+export class RequestKaspiDto {
   /**
    * check – запрос на проверку состояния абонента/номера заказа
    *
    *
    * pay – запрос на пополнение баланса абонента/номера заказа
    * */
+  @ApiProperty()
   command: 'check' | 'pay';
 
   /**
    * внутренний номер запроса в системе Kaspi.kz
    * */
-  txn_id: number;
+  @ApiProperty()
+  txn_id: string;
 
   /**
    * дата учета платежа в системе kaspi.kz (command = pay)
@@ -21,18 +25,21 @@ export interface RequestKaspiDto {
    *
    * example: 20110101120005
    * */
+  @ApiProperty({ required: false })
   txn_date?: string | undefined;
 
   /**
    * идентификатор абонента/номера заказа в информационной системе провайдера
    * */
-  account: number;
+  @ApiProperty()
+  account: string;
 
   /**
    * сумма к зачислению на лицевой счет абонента
    * (в запросе check значение в переменной sum является фиктивным,
    * передается с терминала по умолчанию и его обрабатывать не нужно)
    */
+  @ApiProperty()
   sum: number;
 
   /**
@@ -44,5 +51,6 @@ export interface RequestKaspiDto {
    *
    * (EXAMPLE) data1,data2,…,dataN
    * */
-  extra: Record<string, string>;
+  @ApiProperty({ required: false })
+  extra: string;
 }

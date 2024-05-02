@@ -10,12 +10,12 @@ export interface CheckRequestKaspiDto {
   /**
    * внутренний номер запроса в системе Kaspi.kz
    * */
-  txn_id: number;
+  txn_id: string;
 
   /**
    * идентификатор абонента/номера заказа в информационной системе провайдера
    * */
-  account: number;
+  account: string;
 
   /**
    * сумма к зачислению на лицевой счет абонента
@@ -33,5 +33,5 @@ export interface CheckRequestKaspiDto {
    *
    * (EXAMPLE) data1,data2,…,dataN
    * */
-  extra: Record<string, string>;
+  extra: string;
 }
