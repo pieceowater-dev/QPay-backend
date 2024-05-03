@@ -1,5 +1,7 @@
 import { Socket } from 'socket.io';
 import { Injectable } from '@nestjs/common';
+import { CheckRequestKaspiDto } from '../kaspiapi/dto/check.request.kaspi.dto';
+import { PayRequestKaspiDto } from '../kaspiapi/dto/pay.request.kaspi.dto';
 
 @Injectable()
 export class WsDeviceSubscribeController {
@@ -34,13 +36,32 @@ export class WsDeviceSubscribeController {
 
   readonly deviceActionMap = new Map<string, ActionDevice>();
 
-  async checkDevice(deviceId: string, txn_id: string) {
+  async checkDevice(
+    deviceId: string,
+    key: string,
+    data: CheckRequestKaspiDto,
+  ): Promise<string> {
+    return await this.deviceRequest(deviceId, 'kaspi-check', key, data);
+  }
+
+  async payDevice(
+    deviceId: string,
+    key: string,
+    data: PayRequestKaspiDto,
+  ): Promise<string> {
+    return await this.deviceRequest(deviceId, 'kaspi-pay', key, data);
+  }
+
+  async deviceRequest<T>(
+    deviceId: string,
+    eventKey: string,
+    key: string,
+    data: T,
+  ): Promise<string> {
     const socket = this.getByDeviceId(deviceId);
-    socket.emit('kaspi-check', {
-      txn_id,
-    });
+    socket.emit(eventKey, data);
     const promise = new Promise<string>((resolve) => {
-      this.deviceActionMap.set(txn_id, { resolver: resolve });
+      this.deviceActionMap.set(key, { resolver: resolve });
     });
     return await Promise.race([
       promise,

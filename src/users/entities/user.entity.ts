@@ -23,6 +23,9 @@ export class UserEntity {
   @Column({ type: 'enum', enum: UserRoles, default: UserRoles.MANAGER })
   role: UserRoles;
 
+  @Column({ type: 'boolean', default: false })
+  deleted: boolean;
+
   @BeforeInsert()
   passwordEncrypt() {
     if (this.password !== undefined) {

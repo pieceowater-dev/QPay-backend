@@ -23,7 +23,7 @@ export class RequestKaspiDto {
    * format: (ru)ГГГГММДДЧЧММСС
    *
    *
-   * example: 20110101120005
+   * example: 20240110123030 - 2024-01-10T12:30:30
    * */
   @ApiProperty({ required: false })
   txn_date?: string | undefined;
@@ -53,4 +53,10 @@ export class RequestKaspiDto {
    * */
   @ApiProperty({ required: false })
   extra: string;
+
+  /**
+   * payment comment
+   * */
+  @ApiProperty({ required: false })
+  comment: string;
 }

@@ -30,7 +30,9 @@ export class KaspiapiController {
           requestKaspiDto as CheckRequestKaspiDto,
         );
       case 'pay':
-        return this.kaspiapiService.pay(requestKaspiDto as PayRequestKaspiDto);
+        return this.kaspiapiService.pay(
+          requestKaspiDto as unknown as PayRequestKaspiDto,
+        );
       default:
         throw Error('Unexpected command argument');
     }

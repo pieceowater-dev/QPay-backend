@@ -34,4 +34,9 @@ export interface CheckRequestKaspiDto {
    * (EXAMPLE) data1,data2,…,dataN
    * */
   extra: string;
+
+  /**
+   * payment comment
+   * */
+  comment: string;
 }

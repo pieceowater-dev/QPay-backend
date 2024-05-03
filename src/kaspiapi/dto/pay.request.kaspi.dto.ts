@@ -12,16 +12,7 @@ export interface PayRequestKaspiDto {
    * */
   txn_id: string;
 
-  /**
-   * дата учета платежа в системе kaspi.kz
-   *
-   *
-   * format: (ru)ГГГГММДДЧЧММСС
-   *
-   *
-   * example: 20110101120005
-   * */
-  txn_date: string;
+  txn_date: number;
 
   /**
    * идентификатор абонента/номера заказа в информационной системе провайдера
@@ -45,4 +36,9 @@ export interface PayRequestKaspiDto {
    * (EXAMPLE) data1,data2,…,dataN
    * */
   extra: string;
+
+  /**
+   * payment comment
+   * */
+  comment: string;
 }
