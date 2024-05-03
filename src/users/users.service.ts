@@ -43,6 +43,11 @@ export class UsersService {
   }
 
   async save(user: Partial<UserEntity>): Promise<UserEntity> {
-    return await this.userRepository.save(plainToInstance(UserEntity, user));
+    return await this.userRepository.save(
+      plainToInstance(UserEntity, {
+        ...user,
+        id: isNaN(+user.id) ? undefined : +user.id,
+      }),
+    );
   }
 }
