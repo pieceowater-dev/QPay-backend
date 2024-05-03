@@ -21,6 +21,9 @@ export class PostsService {
   async findAll(filter: DefaultFilter): Promise<PaginatedList<PostEntity>> {
     return await this.postRepository
       .findAndCount({
+        where: {
+          deleted: false,
+        },
         take: filter?.pagination?.take ?? 25,
         skip: filter?.pagination?.skip ?? 0,
         order: {

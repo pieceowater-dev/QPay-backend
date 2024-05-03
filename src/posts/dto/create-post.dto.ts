@@ -5,9 +5,9 @@ import { IsString } from 'class-validator';
 export class CreatePostDto extends PostEntity {
   @IsString()
   @ApiProperty({ required: true })
-  title!: string;
+  name!: string;
 
   @IsString()
   @ApiProperty({ required: true })
-  content!: string;
+  address!: string;
 }
