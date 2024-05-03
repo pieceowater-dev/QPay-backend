@@ -10,7 +10,10 @@ import { SubscribeDTO } from './dto/subscribe.dto';
 import { Socket } from 'socket.io';
 import { KaspiPayWsDto } from './dto/kaspi.pay.ws.dto';
 import { KaspiCheckWsDto } from './dto/kaspi.check.ws.dto';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '../auth.guard';
 
+@UseGuards(AuthGuard)
 @WebSocketGateway()
 export class PostsWsGateway {
   constructor(private readonly postsWsService: PostsWsService) {}
