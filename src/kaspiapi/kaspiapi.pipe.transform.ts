@@ -12,13 +12,17 @@ export class KaspiapiPipeTransform implements PipeTransform {
     const hours = dateString.substring(8, 10);
     const minutes = dateString.substring(10, 12);
     const seconds = dateString.substring(12, 14);
-    return +new Date(
-      +year ?? 0,
-      +month - 1 ?? 0,
-      +day ?? 0,
-      +hours ?? 0,
-      +minutes ?? 0,
-      +seconds ?? 0,
+    return (
+      (+new Date(
+        +year ?? 0,
+        +month - 1 ?? 0,
+        +day ?? 0,
+        +hours ?? 0,
+        +minutes ?? 0,
+        +seconds ?? 0,
+      ) /
+        1000) |
+      0
     );
   }
 
