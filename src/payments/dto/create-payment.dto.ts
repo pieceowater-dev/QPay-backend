@@ -8,4 +8,6 @@ export class CreatePaymentDto {
   result: string;
 
   comment: string;
+
+  device: number;
 }

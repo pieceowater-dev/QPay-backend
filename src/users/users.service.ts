@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserEntity } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { PaginatedList } from '../utils/paginated.list';
 import getPaginated from '../utils/paginated.list.parse';
 import { plainToInstance } from 'class-transformer';
@@ -35,7 +35,10 @@ export class UsersService {
   ): Promise<PaginatedList<UserEntity>> {
     return await this.userRepository
       .findAndCount({
-        where: { deleted: false },
+        where: {
+          name: ILike(`%${filter.search ?? ''}%`),
+          deleted: false,
+        },
         take: filter?.pagination?.take ?? 25,
         skip: filter?.pagination?.skip ?? 0,
         order: {

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { PostEntity } from './entities/post.entity';
 import getPaginated from '../utils/paginated.list.parse';
 import { PaginatedList } from '../utils/paginated.list';
@@ -22,6 +22,7 @@ export class PostsService {
     return await this.postRepository
       .findAndCount({
         where: {
+          name: ILike(`%${filter.search ?? ''}%`),
           deleted: false,
         },
         take: filter?.pagination?.take ?? 25,

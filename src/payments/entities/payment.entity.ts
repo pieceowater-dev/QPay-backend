@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { PostEntity } from '../../posts/entities/post.entity';
 
 @Entity('payments')
 export class PaymentsEntity {
@@ -19,4 +20,7 @@ export class PaymentsEntity {
 
   @Column({ type: 'text', default: '' })
   comment: string;
+
+  @ManyToOne(() => PostEntity, (p) => p.id, { eager: true })
+  device: PostEntity | number;
 }

@@ -1,10 +1,12 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
-import { DefaultFilterPipe } from '../utils/default.filter.pipe';
-import { DefaultFilter } from '../utils/default.filter';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth.guard';
 import { AuthTypes } from '../auth/enums/auth.types';
+import { FilterPaymentDto } from './dto/filter.payment.dto';
+import { PaymentsEntity } from './entities/payment.entity';
+import { PaginatedList } from '../utils/paginated.list';
+import { PaymentsFilterPipe } from './payments.filter.pipe';
 
 @ApiTags('Payments')
 @UseGuards(AuthGuard)
@@ -14,12 +16,14 @@ export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Get()
-  findAll(@Query(DefaultFilterPipe) filter: DefaultFilter) {
+  findAll(
+    @Query(PaymentsFilterPipe) filter: FilterPaymentDto,
+  ): Promise<PaginatedList<PaymentsEntity>> {
     return this.paymentsService.findPaginatedMany(filter);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.paymentsService.findOne(+id);
+  async findOne(@Param('id') id: string): Promise<PaymentsEntity> {
+    return await this.paymentsService.findOne(+id);
   }
 }

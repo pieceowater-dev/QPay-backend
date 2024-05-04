@@ -5,6 +5,7 @@ import { CheckRequestKaspiDto } from './dto/check.request.kaspi.dto';
 import { PayRequestKaspiDto } from './dto/pay.request.kaspi.dto';
 import { KaspiapiPipeTransform } from './kaspiapi.pipe.transform';
 import { RequestKaspiDto } from './dto/request.kaspi.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 // TODO настроить cors на GET 194.187.247.152
 // Интерфейс должен принимать запросы по протоколу HTTPS с IP-адресов подсети: 194.187.247.152
@@ -15,6 +16,7 @@ import { RequestKaspiDto } from './dto/request.kaspi.dto';
 // ожидается интенсивным (до 10 платежей в минуту и более), необходимо,
 // чтобы интерфейс поддерживал многопоточную коммуникацию до 10-15 одновременных соединений.
 
+@ApiTags('KaspiApi')
 @Controller('kaspiapi')
 export class KaspiapiController {
   constructor(private readonly kaspiapiService: KaspiapiService) {}
