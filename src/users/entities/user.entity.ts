@@ -1,4 +1,10 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { hashSync, genSaltSync } from 'bcrypt';
 
 export enum UserRoles {
@@ -27,6 +33,7 @@ export class UserEntity {
   deleted: boolean;
 
   @BeforeInsert()
+  @BeforeUpdate()
   passwordEncrypt() {
     if (this.password !== undefined) {
       this.password = hashSync(this.password, genSaltSync(12));

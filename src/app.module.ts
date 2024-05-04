@@ -11,6 +11,7 @@ import { DatabaseModule } from './database/database.module';
 import { JwtModule } from '@nestjs/jwt';
 import { PostsWsModule } from './posts-ws/posts-ws.module';
 import { KaspiapiModule } from './kaspiapi/kaspiapi.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { KaspiapiModule } from './kaspiapi/kaspiapi.module';
     PostsModule,
     PostsWsModule,
     KaspiapiModule,
+    PaymentsModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],

@@ -1,9 +1,9 @@
 import { DataSource } from 'typeorm';
-import { PaymentsEntity } from './entities/payments.entity';
+import { PaymentsEntity } from './entities/payment.entity';
 
-export const kaspiApiProviders = [
+export const paymentsProvider = [
   {
-    provide: 'KASPI_PAYMENTS_REPOSITORY',
+    provide: 'PAYMENTS_REPOSITORY',
     useFactory: (dataSource: DataSource) =>
       dataSource.getRepository(PaymentsEntity),
     inject: ['DATA_SOURCE'],

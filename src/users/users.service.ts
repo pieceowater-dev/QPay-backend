@@ -13,7 +13,9 @@ export class UsersService {
     private userRepository: Repository<UserEntity>,
   ) {}
 
-  async findOneByEmail(email: string): Promise<UserEntity | undefined> {
+  async findOneNotDeletedByEmail(
+    email: string,
+  ): Promise<UserEntity | undefined> {
     return await this.userRepository.findOne({
       select: ['id', 'email', 'name', 'password'],
       where: { email, deleted: false },
@@ -33,6 +35,7 @@ export class UsersService {
   ): Promise<PaginatedList<UserEntity>> {
     return await this.userRepository
       .findAndCount({
+        where: { deleted: false },
         take: filter?.pagination?.take ?? 25,
         skip: filter?.pagination?.skip ?? 0,
         order: {

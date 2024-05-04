@@ -14,7 +14,7 @@ export class AuthService {
   ) {}
 
   async signIn(email: string, pass: string): Promise<AuthResponse> {
-    const user = await this.usersService.findOneByEmail(email);
+    const user = await this.usersService.findOneNotDeletedByEmail(email);
     if (user === undefined || !compareSync(pass, user?.password ?? '')) {
       throw new UnauthorizedException();
     }

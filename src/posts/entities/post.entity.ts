@@ -10,12 +10,15 @@ export class PostEntity {
   @Column()
   address: string;
 
+  @Column()
+  identifier: string;
+
   @Column({ type: 'bigint', default: () => 'round(EXTRACT(epoch FROM now()))' })
   created: string;
 
-  @Column({ type: 'boolean', nullable: true, default: null })
+  @Column({ type: 'boolean', default: false })
   stopped: boolean;
 
-  @Column({ type: 'boolean', nullable: true, default: null })
+  @Column({ type: 'boolean', default: false })
   deleted: boolean;
 }

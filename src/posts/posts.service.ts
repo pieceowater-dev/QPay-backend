@@ -40,8 +40,4 @@ export class PostsService {
   async update(id: number, updatePostDto: UpdatePostDto) {
     return await this.postRepository.save({ ...updatePostDto, id });
   }
-
-  async remove(id: number): Promise<PostEntity> {
-    return await this.postRepository.remove({ id } as PostEntity);
-  }
 }

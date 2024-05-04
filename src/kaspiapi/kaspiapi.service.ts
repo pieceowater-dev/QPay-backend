@@ -1,17 +1,16 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ResponseKaspiDto } from './dto/response.kaspi.dto';
 import { CheckRequestKaspiDto } from './dto/check.request.kaspi.dto';
 import { PayRequestKaspiDto } from './dto/pay.request.kaspi.dto';
 import { WsDeviceSubscribeController } from '../posts-ws/ws.device.subscribe.controller';
-import { Repository } from 'typeorm';
-import { PaymentsEntity } from './entities/payments.entity';
+import { PaymentsService } from '../payments/payments.service';
+import { PaymentsEntity } from '../payments/entities/payment.entity';
 
 @Injectable()
 export class KaspiapiService {
   constructor(
     private readonly wsDeviceSubscribeController: WsDeviceSubscribeController,
-    @Inject('KASPI_PAYMENTS_REPOSITORY')
-    private paymentsRepository: Repository<PaymentsEntity>,
+    private readonly paymentsService: PaymentsService,
   ) {}
 
   async check(
@@ -41,13 +40,14 @@ export class KaspiapiService {
       .then(() => '1')
       .catch(() => '0');
 
-    const savedPayment: PaymentsEntity = await this.paymentsRepository.save({
+    const savedPayment: PaymentsEntity = await this.paymentsService.create({
       sum: createKaspiapiDto.sum + '',
       comment: createKaspiapiDto.comment,
       date: createKaspiapiDto.txn_date + '',
       txn_id: createKaspiapiDto.txn_id,
       result,
     });
+
     return {
       ...savedPayment,
       pry_txn_id: createKaspiapiDto.txn_id,
