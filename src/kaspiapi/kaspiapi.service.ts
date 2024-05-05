@@ -41,7 +41,7 @@ export class KaspiapiService {
       .catch(() => '0');
 
     // TODO calculate
-    const device = 1;
+    const device = 2;
 
     const savedPayment: PaymentsEntity = await this.paymentsService.create({
       sum: createKaspiapiDto.sum + '',

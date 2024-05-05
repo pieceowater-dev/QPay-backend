@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserEntity } from './entities/user.entity';
-import { ILike, Repository } from 'typeorm';
+import { Any, ILike, Repository } from 'typeorm';
 import { PaginatedList } from '../utils/paginated.list';
 import getPaginated from '../utils/paginated.list.parse';
 import { plainToInstance } from 'class-transformer';
@@ -24,6 +24,10 @@ export class UsersService {
 
   async findOneById(id: number): Promise<UserEntity | undefined> {
     return await this.userRepository.findOneBy({ id });
+  }
+
+  async findByIds(ids: number[]): Promise<UserEntity[]> {
+    return await this.userRepository.findBy({ id: Any(ids) });
   }
 
   async findMany(): Promise<UserEntity[] | undefined> {

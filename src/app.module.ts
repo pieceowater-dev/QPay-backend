@@ -12,6 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PostsWsModule } from './posts-ws/posts-ws.module';
 import { KaspiapiModule } from './kaspiapi/kaspiapi.module';
 import { PaymentsModule } from './payments/payments.module';
+import { PostsUsersAccessModule } from './posts-users-access/posts-users-access.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { PaymentsModule } from './payments/payments.module';
     PostsWsModule,
     KaspiapiModule,
     PaymentsModule,
+    PostsUsersAccessModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],
