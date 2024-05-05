@@ -9,5 +9,6 @@ import { GlobalJwtModule } from '../jwt/jwt.module';
   imports: [DatabaseModule, GlobalJwtModule],
   controllers: [PostsController],
   providers: [...postProviders, PostsService],
+  exports: [PostsService],
 })
 export class PostsModule {}

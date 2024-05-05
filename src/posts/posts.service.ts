@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { ILike, Repository } from 'typeorm';
+import { Any, ILike, Repository } from 'typeorm';
 import { PostEntity } from './entities/post.entity';
 import getPaginated from '../utils/paginated.list.parse';
 import { PaginatedList } from '../utils/paginated.list';
@@ -32,6 +32,10 @@ export class PostsService {
         },
       })
       .then(getPaginated);
+  }
+
+  async findByIds(ids: number[]): Promise<PostEntity[]> {
+    return await this.postRepository.findBy({ id: Any(ids) });
   }
 
   async findOne(id: number) {
