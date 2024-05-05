@@ -7,6 +7,7 @@ import {
   Param,
   UseGuards,
   Query,
+  Req,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -30,8 +31,8 @@ export class PostsController {
   }
 
   @Get()
-  findAll(@Query(DefaultFilterPipe) filter: DefaultFilter) {
-    return this.postsService.findAll(filter);
+  findAll(@Query(DefaultFilterPipe) filter: DefaultFilter, @Req() req: any) {
+    return this.postsService.findAll(req.user, filter);
   }
 
   @Get(':id')

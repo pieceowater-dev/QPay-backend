@@ -6,6 +6,7 @@ import { PostEntity } from './entities/post.entity';
 import getPaginated from '../utils/paginated.list.parse';
 import { PaginatedList } from '../utils/paginated.list';
 import { DefaultFilter } from '../utils/default.filter';
+import { UserRoles } from '../users/entities/user.entity';
 
 @Injectable()
 export class PostsService {
@@ -18,12 +19,21 @@ export class PostsService {
     return await this.postRepository.save(createPostDto);
   }
 
-  async findAll(filter: DefaultFilter): Promise<PaginatedList<PostEntity>> {
+  async findAll(
+    user: any,
+    filter: DefaultFilter,
+  ): Promise<PaginatedList<PostEntity>> {
     return await this.postRepository
       .findAndCount({
+        relations: ['posts'],
         where: {
           name: ILike(`%${filter.search ?? ''}%`),
           deleted: false,
+          posts: {
+            user: {
+              id: user.role === UserRoles.ADMINISTRATOR ? undefined : user.id,
+            },
+          },
         },
         take: filter?.pagination?.take ?? 25,
         skip: filter?.pagination?.skip ?? 0,

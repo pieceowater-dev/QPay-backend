@@ -31,14 +31,16 @@ export class PostsUsersAccessService {
     return await this.postsUsersAccessRepository.save(entities);
   }
   async findOneByUser(id: number): Promise<PostsUsersAccess[]> {
-    return await this.postsUsersAccessRepository.findBy({
-      user: Equal(id),
+    return await this.postsUsersAccessRepository.find({
+      relations: ['post'],
+      where: { user: Equal(id) },
     });
   }
 
   async findOneByPost(id: number): Promise<PostsUsersAccess[]> {
-    return await this.postsUsersAccessRepository.findBy({
-      post: Equal(id),
+    return await this.postsUsersAccessRepository.find({
+      relations: ['user'],
+      where: { post: Equal(id) },
     });
   }
 

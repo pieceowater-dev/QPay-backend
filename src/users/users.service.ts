@@ -17,7 +17,7 @@ export class UsersService {
     email: string,
   ): Promise<UserEntity | undefined> {
     return await this.userRepository.findOne({
-      select: ['id', 'email', 'name', 'password'],
+      select: ['id', 'email', 'name', 'password', 'role'],
       where: { email, deleted: false },
     });
   }
