@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Any, ILike, Repository } from 'typeorm';
@@ -7,20 +7,35 @@ import getPaginated from '../utils/paginated.list.parse';
 import { PaginatedList } from '../utils/paginated.list';
 import { DefaultFilter } from '../utils/default.filter';
 import { UserRoles } from '../users/entities/user.entity';
+import { TokenPayload } from '../auth/interfaces/token.payload';
+import { PostsUsersAccessService } from '../posts-users-access/posts-users-access.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @Inject('POST_REPOSITORY')
     private postRepository: Repository<PostEntity>,
+    private readonly postsUsersAccessService: PostsUsersAccessService,
   ) {}
 
-  async create(createPostDto: CreatePostDto): Promise<PostEntity> {
-    return await this.postRepository.save(createPostDto);
+  async create(
+    createPostDto: CreatePostDto,
+    user: TokenPayload,
+  ): Promise<PostEntity> {
+    return await this.postRepository
+      .save(createPostDto)
+      .then(async (result) => {
+        if (user.role === UserRoles.MANAGER) {
+          await this.postsUsersAccessService.create([
+            { user: user.id, post: result.id },
+          ]);
+        }
+        return result;
+      });
   }
 
   async findAll(
-    user: any,
+    user: TokenPayload,
     filter: DefaultFilter,
   ): Promise<PaginatedList<PostEntity>> {
     return await this.postRepository
@@ -52,7 +67,13 @@ export class PostsService {
     return await this.postRepository.findOneBy({ id });
   }
 
-  async update(id: number, updatePostDto: UpdatePostDto) {
-    return await this.postRepository.save({ ...updatePostDto, id });
+  async update(id: number, updatePostDto: UpdatePostDto, user: TokenPayload) {
+    if (
+      user.role === UserRoles.ADMINISTRATOR ||
+      (await this.postsUsersAccessService.checkAccess(user.id, id)) !== null
+    ) {
+      return await this.postRepository.save({ ...updatePostDto, id });
+    }
+    throw new UnauthorizedException();
   }
 }
