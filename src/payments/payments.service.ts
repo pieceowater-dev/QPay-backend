@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { PaymentsEntity } from './entities/payment.entity';
-import { Any, ILike, Repository } from 'typeorm';
+import { Any, Between, ILike, Repository } from 'typeorm';
 import { DefaultFilter } from '../utils/default.filter';
 import { PaginatedList } from '../utils/paginated.list';
 import getPaginated from '../utils/paginated.list.parse';
@@ -28,6 +28,10 @@ export class PaymentsService {
           device: {
             id: filter.devices !== undefined ? Any(filter.devices) : undefined,
           },
+          date:
+            filter.date.start !== undefined && filter.date.end !== undefined
+              ? Between(filter.date.start + '', filter.date.end + '')
+              : undefined,
         },
         take: filter?.pagination?.take ?? 25,
         skip: filter?.pagination?.skip ?? 0,

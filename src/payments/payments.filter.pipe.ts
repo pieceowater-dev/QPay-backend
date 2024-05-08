@@ -1,6 +1,7 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { FilterPaymentDto } from './dto/filter.payment.dto';
+import { TableDateFilter } from '../utils/date.filter';
 
 @Injectable()
 export class PaymentsFilterPipe implements PipeTransform {
@@ -10,6 +11,7 @@ export class PaymentsFilterPipe implements PipeTransform {
       : typeof value.devices === 'undefined'
         ? value.devices
         : [value.devices];
+    console.log(value);
     return plainToInstance(metadata.metatype, {
       pagination: {
         skip: value.skip,
@@ -19,6 +21,7 @@ export class PaymentsFilterPipe implements PipeTransform {
         by: value.by,
         field: value.field,
       },
+      date: new TableDateFilter(value.dateType, value.start, value.end),
       devices,
       search: value.search,
     });
