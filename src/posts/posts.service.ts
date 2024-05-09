@@ -63,8 +63,12 @@ export class PostsService {
     return await this.postRepository.findBy({ id: Any(ids) });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<PostEntity | null> {
     return await this.postRepository.findOneBy({ id });
+  }
+
+  async findOneOrFail(id: number): Promise<PostEntity> {
+    return await this.postRepository.findOneByOrFail({ id });
   }
 
   async update(id: number, updatePostDto: UpdatePostDto, user: TokenPayload) {

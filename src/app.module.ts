@@ -13,6 +13,7 @@ import { PostsWsModule } from './posts-ws/posts-ws.module';
 import { KaspiapiModule } from './kaspiapi/kaspiapi.module';
 import { PaymentsModule } from './payments/payments.module';
 import { PostsUsersAccessModule } from './posts-users-access/posts-users-access.module';
+import { PostTokenModule } from './post-token/post-token.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { PostsUsersAccessModule } from './posts-users-access/posts-users-access.
     KaspiapiModule,
     PaymentsModule,
     PostsUsersAccessModule,
+    PostTokenModule,
   ],
   controllers: [AppController, HealthController],
   providers: [AppService],

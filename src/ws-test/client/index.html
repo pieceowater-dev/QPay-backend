@@ -36,25 +36,10 @@
     const chatBody = document.getElementById('chatBody')
     const chatMessage = document.getElementById('chatMessage')
 
-    chatMessage.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-          socket.emit('message:new', JSON.stringify({
-              value: chatMessage.value,
-              to: '660e67f551e23438eb6c73d8'
-          }))
-          chatBody.appendChild(createChatRow(`[me] ${chatMessage.value}`))
-          chatMessage.value = '';
-        }
-    })
 
     socket.on('subscribe', (args) => {
         console.log(args)
     } )
-
-    socket.on('message:new', (args) => {
-        console.log(args)
-        chatBody.appendChild(createChatRow(`[${args.userType}-${args.user}] ${args.value}`))
-    })
 
     socket.on('kaspi-check', (args) => {
         socket.emit('kaspi-check', args)
