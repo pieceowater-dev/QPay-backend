@@ -1,4 +1,6 @@
 export class CreatePaymentDto {
+  datetime: string;
+
   date: string;
 
   sum: string;

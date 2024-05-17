@@ -46,7 +46,8 @@ export class KaspiapiService {
     const savedPayment: PaymentsEntity = await this.paymentsService.create({
       sum: createKaspiapiDto.sum + '',
       comment: createKaspiapiDto.comment,
-      date: createKaspiapiDto.txn_date + '',
+      datetime: createKaspiapiDto.txn_date + '',
+      date: new Date(createKaspiapiDto.txn_date * 1000).toJSON().substr(0, 10),
       txn_id: createKaspiapiDto.txn_id,
       result,
       device,
