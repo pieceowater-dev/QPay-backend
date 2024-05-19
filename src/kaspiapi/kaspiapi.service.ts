@@ -17,11 +17,7 @@ export class KaspiapiService {
     createKaspiapiDto: CheckRequestKaspiDto,
   ): Promise<ResponseKaspiDto> {
     const result = await this.wsDeviceSubscribeController
-      .checkDevice(
-        'customClientId',
-        createKaspiapiDto.txn_id,
-        createKaspiapiDto,
-      )
+      .checkDevice(1, createKaspiapiDto.txn_id, createKaspiapiDto)
       .then(() => '1')
       .catch(() => '0');
 
@@ -36,7 +32,7 @@ export class KaspiapiService {
 
   async pay(createKaspiapiDto: PayRequestKaspiDto): Promise<ResponseKaspiDto> {
     const result = await this.wsDeviceSubscribeController
-      .payDevice('customClientId', createKaspiapiDto.txn_id, createKaspiapiDto)
+      .payDevice(1, createKaspiapiDto.txn_id, createKaspiapiDto)
       .then(() => '1')
       .catch(() => '0');
 

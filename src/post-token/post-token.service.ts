@@ -16,12 +16,7 @@ export class PostTokenService {
   ): Promise<AuthResponse> {
     await this.postService.findOneOrFail(createPostTokenDto.postId);
     return {
-      token: await this.jwt.signAsync(
-        { postId: createPostTokenDto.postId },
-        {
-          expiresIn: undefined,
-        },
-      ),
+      token: await this.jwt.signAsync({ postId: createPostTokenDto.postId }),
     };
   }
 }

@@ -26,7 +26,7 @@ export class PaymentsEntity {
   @Column({ type: 'money' })
   sum: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, nullable: true, default: null })
   txn_id: string;
 
   @Column({ type: 'varchar', length: 5 })

@@ -5,25 +5,21 @@ import { PayRequestKaspiDto } from '../kaspiapi/dto/pay.request.kaspi.dto';
 
 @Injectable()
 export class WsDeviceSubscribeController {
-  private socketIdToDeviceId = new Map<string, string>([]);
-  private deviceIdToSocket = new Map<string, Socket>([]);
+  private socketIdToDeviceId = new Map<string, number>([]);
+  private deviceIdToSocket = new Map<number, Socket>([]);
 
   log(): void {
     console.log(this.socketIdToDeviceId);
     console.log(this.deviceIdToSocket);
   }
 
-  set(deviceId: string, socket: Socket): void {
+  set(deviceId: number, socket: Socket): void {
     this.socketIdToDeviceId.set(socket.id, deviceId);
     this.deviceIdToSocket.set(deviceId, socket);
   }
 
-  getByDeviceId(deviceId: string): Socket {
+  getByDeviceId(deviceId: number): Socket {
     return this.deviceIdToSocket.get(deviceId);
-  }
-
-  getBySocketId(socketId: string): string {
-    return this.socketIdToDeviceId.get(socketId);
   }
 
   deleteBySocketId(socketId: string): void {
@@ -37,7 +33,7 @@ export class WsDeviceSubscribeController {
   readonly deviceActionMap = new Map<string, ActionDevice>();
 
   async checkDevice(
-    deviceId: string,
+    deviceId: number,
     key: string,
     data: CheckRequestKaspiDto,
   ): Promise<string> {
@@ -45,7 +41,7 @@ export class WsDeviceSubscribeController {
   }
 
   async payDevice(
-    deviceId: string,
+    deviceId: number,
     key: string,
     data: PayRequestKaspiDto,
   ): Promise<string> {
@@ -53,7 +49,7 @@ export class WsDeviceSubscribeController {
   }
 
   async deviceRequest<T>(
-    deviceId: string,
+    deviceId: number,
     eventKey: string,
     key: string,
     data: T,

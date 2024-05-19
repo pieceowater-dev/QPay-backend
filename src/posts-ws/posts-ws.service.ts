@@ -6,19 +6,23 @@ import { WsResponse } from '@nestjs/websockets';
 import { SubscribeDTO } from './dto/subscribe.dto';
 import { KaspiCheckWsDto } from './dto/kaspi.check.ws.dto';
 import { KaspiPayWsDto } from './dto/kaspi.pay.ws.dto';
+import { CashlessPaymentWsDto } from './dto/cashless.payment.ws.dto';
+import { PaymentsService } from '../payments/payments.service';
+import { PaymentsEntity } from '../payments/entities/payment.entity';
 
 @Injectable()
 export class PostsWsService {
   constructor(
     private readonly wsDeviceSubscribeController: WsDeviceSubscribeController,
+    private readonly paymentsService: PaymentsService,
   ) {}
 
   onPay(onPayDto: OnPayDto) {
     return onPayDto;
   }
 
-  subscribe(subscribeDTO: SubscribeDTO, client: Socket): WsResponse<'OK'> {
-    this.wsDeviceSubscribeController.set(subscribeDTO.deviceId, client);
+  subscribe(deviceId: number, client: Socket): WsResponse<'OK'> {
+    this.wsDeviceSubscribeController.set(deviceId, client);
     client.on('disconnect', (reason: DisconnectReason, description: any) => {
       this.wsDeviceSubscribeController.deleteBySocketId(client.id);
       console.log('Socket disconnected via reason: ', reason, description);
@@ -33,4 +37,17 @@ export class PostsWsService {
   }
 
   kaspiPay(kaspiPayWsDto: KaspiPayWsDto) {}
+
+  async cashlessPayment(
+    deviceId: number,
+    cashlessPaymentWsDto: CashlessPaymentWsDto,
+  ): Promise<PaymentsEntity> {
+    return await this.paymentsService.create({
+      sum: cashlessPaymentWsDto.sum + '',
+      datetime: ((+new Date() / 1000) | 0) + '',
+      date: new Date().toJSON().substr(0, 10),
+      device: deviceId,
+      result: '1',
+    });
+  }
 }

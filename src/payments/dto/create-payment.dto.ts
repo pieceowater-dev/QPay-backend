@@ -5,11 +5,11 @@ export class CreatePaymentDto {
 
   sum: string;
 
-  txn_id: string;
+  txn_id?: string;
 
   result: string;
 
-  comment: string;
+  comment?: string;
 
   device: number;
 }

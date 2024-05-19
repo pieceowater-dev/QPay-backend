@@ -8,25 +8,27 @@ import { JwtService } from '@nestjs/jwt';
 import { WsArgumentsHost } from '@nestjs/common/interfaces';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AuthWsGuard implements CanActivate {
   constructor(private jwt: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    const ws = context.switchToWs();
+    const token = this.extractTokenFromWsPayload(ws);
     if (!token) {
       throw new UnauthorizedException();
     }
     try {
-      request['user'] = await this.jwt.verifyAsync(token);
+      ws.getClient()['data'] = await this.jwt.verifyAsync(token, {
+        ignoreExpiration: true,
+      });
     } catch {
       throw new UnauthorizedException();
     }
     return true;
   }
 
-  private extractTokenFromHeader(request: any): string | undefined {
-    const [type, token] = request.headers?.authorization?.split(' ') ?? [];
+  private extractTokenFromWsPayload(ws: WsArgumentsHost): string | undefined {
+    const [type, token] = ws.getClient().handshake.auth.token?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }
 }

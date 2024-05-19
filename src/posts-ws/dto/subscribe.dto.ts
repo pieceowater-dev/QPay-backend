@@ -1,3 +1,1 @@
-export interface SubscribeDTO {
-  deviceId: string;
-}
+export interface SubscribeDTO {}
