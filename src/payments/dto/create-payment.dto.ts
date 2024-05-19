@@ -1,3 +1,5 @@
+import { PaymentType } from '../entities/payment.entity';
+
 export class CreatePaymentDto {
   datetime: string;
 
@@ -12,4 +14,6 @@ export class CreatePaymentDto {
   comment?: string;
 
   device: number;
+
+  type?: PaymentType;
 }

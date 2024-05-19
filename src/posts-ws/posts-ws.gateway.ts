@@ -9,7 +9,7 @@ import { PostsWsService } from './posts-ws.service';
 import { Socket } from 'socket.io';
 import { KaspiPayWsDto } from './dto/kaspi.pay.ws.dto';
 import { KaspiCheckWsDto } from './dto/kaspi.check.ws.dto';
-import { CashlessPaymentWsDto } from './dto/cashless.payment.ws.dto';
+import { CashPaymentWsDto } from './dto/cashPaymentWsDto';
 import { PaymentsEntity } from '../payments/entities/payment.entity';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AuthTypes } from '../auth/enums/auth.types';
@@ -37,16 +37,16 @@ export class PostsWsGateway {
     return this.postsWsService.kaspiPay(kaspiPayWsDTO);
   }
 
-  @SubscribeMessage('cashless-payment')
-  async cashlessPayment(
+  @SubscribeMessage('cash-payment')
+  async cashPayment(
     @ConnectedSocket() client: Socket,
-    @MessageBody() cashlessPaymentWsDto: CashlessPaymentWsDto,
+    @MessageBody() cashPaymentWsDto: CashPaymentWsDto,
   ): Promise<WsResponse<PaymentsEntity>> {
     return {
       event: 'ping',
-      data: await this.postsWsService.cashlessPayment(
+      data: await this.postsWsService.cashPayment(
         client.data.postId,
-        cashlessPaymentWsDto,
+        cashPaymentWsDto,
       ),
     };
   }

@@ -6,9 +6,12 @@ import { WsResponse } from '@nestjs/websockets';
 import { SubscribeDTO } from './dto/subscribe.dto';
 import { KaspiCheckWsDto } from './dto/kaspi.check.ws.dto';
 import { KaspiPayWsDto } from './dto/kaspi.pay.ws.dto';
-import { CashlessPaymentWsDto } from './dto/cashless.payment.ws.dto';
+import { CashPaymentWsDto } from './dto/cashPaymentWsDto';
 import { PaymentsService } from '../payments/payments.service';
-import { PaymentsEntity } from '../payments/entities/payment.entity';
+import {
+  PaymentsEntity,
+  PaymentType,
+} from '../payments/entities/payment.entity';
 
 @Injectable()
 export class PostsWsService {
@@ -38,12 +41,13 @@ export class PostsWsService {
 
   kaspiPay(kaspiPayWsDto: KaspiPayWsDto) {}
 
-  async cashlessPayment(
+  async cashPayment(
     deviceId: number,
-    cashlessPaymentWsDto: CashlessPaymentWsDto,
+    cashPaymentWsDto: CashPaymentWsDto,
   ): Promise<PaymentsEntity> {
     return await this.paymentsService.create({
-      sum: cashlessPaymentWsDto.sum + '',
+      sum: cashPaymentWsDto.sum + '',
+      type: PaymentType.CASH,
       datetime: ((+new Date() / 1000) | 0) + '',
       date: new Date().toJSON().substr(0, 10),
       device: deviceId,

@@ -28,7 +28,7 @@
         socket.emit('subscribe')
     }
     const cashlessPayment = () => {
-        socket.emit('cashless-payment', {
+        socket.emit('cash-payment', {
             sum: '100'
         })
     }
