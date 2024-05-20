@@ -36,14 +36,24 @@ export class KaspiapiService {
       .then(() => '1')
       .catch(() => '0');
 
+    const getDate = (date: Date) => {
+      return (
+        date.getFullYear() +
+        '-' +
+        (date.getMonth() + 1 + '').padStart(2, '0') +
+        '-' +
+        date.getDate()
+      );
+    };
+
     // TODO calculate
     const device = 2;
-
+    console.log(new Date(createKaspiapiDto.txn_date * 1000).toJSON());
     const savedPayment: PaymentsEntity = await this.paymentsService.create({
       sum: createKaspiapiDto.sum + '',
       comment: createKaspiapiDto.comment,
       datetime: createKaspiapiDto.txn_date + '',
-      date: new Date(createKaspiapiDto.txn_date * 1000).toJSON().substr(0, 10),
+      date: getDate(new Date(createKaspiapiDto.txn_date * 1000)),
       txn_id: createKaspiapiDto.txn_id,
       result,
       device,
