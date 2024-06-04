@@ -36,7 +36,7 @@ export class PaymentsEntity {
   })
   txn_id: string;
 
-  @Column({ type: 'smallint' })
+  @Column({ type: 'smallint', default: 0 })
   result: KaspiResult;
 
   @Column({ type: 'text', default: '' })
