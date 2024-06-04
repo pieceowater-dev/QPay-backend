@@ -39,7 +39,9 @@ export class PostsWsService {
   }
 
   kaspiPay(kaspiPayWsDto: KaspiPayWsDto) {
-    console.log('Nothing', kaspiPayWsDto);
+    this.wsDeviceSubscribeController.deviceActionMap
+      .get(kaspiPayWsDto.txn_id)
+      ?.resolver(kaspiPayWsDto.txn_id);
   }
 
   async cashPayment(

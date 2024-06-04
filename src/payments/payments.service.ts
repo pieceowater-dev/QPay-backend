@@ -51,6 +51,10 @@ export class PaymentsService {
     return await this.paymentsEntityRepository.findOneBy({ id });
   }
 
+  async findPaymentByTXNID(txn_id: string): Promise<PaymentsEntity> {
+    return await this.paymentsEntityRepository.findOneBy({ txn_id });
+  }
+
   async getTypePie(
     filter: FilterPieTypeDto,
   ): Promise<ReportPieTypeResponseDto[]> {

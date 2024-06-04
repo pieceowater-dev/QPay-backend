@@ -35,7 +35,39 @@ export class KaspiapiService {
     };
   }
 
+  private async checkExistsPayment(
+    createKaspiapiDto: PayRequestKaspiDto,
+  ): Promise<ResponseKaspiDto | undefined> {
+    const existsPayment: PaymentsEntity =
+      await this.paymentsService.findPaymentByTXNID(createKaspiapiDto.txn_id);
+    if (existsPayment) {
+      return {
+        comment: createKaspiapiDto.comment,
+        sum: createKaspiapiDto.sum + '',
+        txn_id: createKaspiapiDto.txn_id,
+        pry_txn_id: createKaspiapiDto.txn_id,
+        result: 3,
+      };
+    }
+    return undefined;
+  }
+
+  private getDate(date: Date): string {
+    return (
+      date.getFullYear() +
+      '-' +
+      (date.getMonth() + 1 + '').padStart(2, '0') +
+      '-' +
+      date.getDate()
+    );
+  }
+
   async pay(createKaspiapiDto: PayRequestKaspiDto): Promise<ResponseKaspiDto> {
+    const existsPayment = await this.checkExistsPayment(createKaspiapiDto);
+    if (existsPayment) {
+      return existsPayment;
+    }
+
     const result: KaspiResult = await this.wsDeviceSubscribeController
       .payDevice(
         +createKaspiapiDto.device_id,
@@ -43,23 +75,16 @@ export class KaspiapiService {
         createKaspiapiDto,
       )
       .then(() => 0 as KaspiResult)
-      .catch(() => 1 as KaspiResult);
-
-    const getDate = (date: Date) => {
-      return (
-        date.getFullYear() +
-        '-' +
-        (date.getMonth() + 1 + '').padStart(2, '0') +
-        '-' +
-        date.getDate()
-      );
-    };
+      .catch((e) => {
+        console.log(e);
+        return 1 as KaspiResult;
+      });
 
     const savedPayment: PaymentsEntity = await this.paymentsService.create({
       sum: createKaspiapiDto.sum + '',
       comment: createKaspiapiDto.comment,
       datetime: createKaspiapiDto.txn_date + '',
-      date: getDate(new Date(createKaspiapiDto.txn_date * 1000)),
+      date: this.getDate(new Date(createKaspiapiDto.txn_date * 1000)),
       txn_id: createKaspiapiDto.txn_id,
       result,
       device: +createKaspiapiDto.device_id,

@@ -48,7 +48,7 @@ export class WsDeviceSubscribeController {
     return await this.deviceRequest(deviceId, 'kaspi-pay', key, data);
   }
 
-  async deviceRequest<T>(
+  private async deviceRequest<T>(
     deviceId: number,
     eventKey: string,
     key: string,
