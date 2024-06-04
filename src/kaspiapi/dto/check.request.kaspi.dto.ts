@@ -32,8 +32,9 @@ export interface CheckRequestKaspiDto {
    *
    *
    * (EXAMPLE) data1,data2,…,dataN
+   *
    * */
-  extra: string;
+  device_id: string;
 
   /**
    * payment comment

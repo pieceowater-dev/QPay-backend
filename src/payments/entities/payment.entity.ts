@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PostEntity } from '../../posts/entities/post.entity';
+import { KaspiResult } from '../../kaspiapi/types/KaspiResult';
 
 export enum PaymentType {
   CASH,
@@ -26,11 +27,17 @@ export class PaymentsEntity {
   @Column({ type: 'money' })
   sum: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true, default: null })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+    default: null,
+    unique: true,
+  })
   txn_id: string;
 
-  @Column({ type: 'varchar', length: 5 })
-  result: string;
+  @Column({ type: 'smallint' })
+  result: KaspiResult;
 
   @Column({ type: 'text', default: '' })
   comment: string;

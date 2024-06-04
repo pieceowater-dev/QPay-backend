@@ -5,6 +5,19 @@ import { PayRequestKaspiDto } from './dto/pay.request.kaspi.dto';
 
 @Injectable()
 export class KaspiapiPipeTransform implements PipeTransform {
+  transform(
+    value: any,
+    metadata: ArgumentMetadata,
+  ): CheckRequestKaspiDto | PayRequestKaspiDto {
+    return plainToInstance(metadata.metatype, {
+      ...value,
+      txn_date:
+        value.txn_date && value.txn_date.length > 0
+          ? this.parseDate(value.txn_date)
+          : undefined,
+    });
+  }
+
   parseDate(dateString: string): number {
     const year = dateString.substring(0, 4);
     const month = dateString.substring(4, 6);
@@ -24,18 +37,5 @@ export class KaspiapiPipeTransform implements PipeTransform {
         1000) |
       0
     );
-  }
-
-  transform(
-    value: any,
-    metadata: ArgumentMetadata,
-  ): CheckRequestKaspiDto | PayRequestKaspiDto {
-    return plainToInstance(metadata.metatype, {
-      ...value,
-      txn_date:
-        value.txn_date && value.txn_date.length > 0
-          ? this.parseDate(value.txn_date)
-          : undefined,
-    });
   }
 }

@@ -1,3 +1,5 @@
+import { KaspiResult } from '../types/KaspiResult';
+
 export interface ResponseKaspiDto {
   /**
    * номер транзакции в системе, который передается провайдеру в переменной txn_id.
@@ -16,7 +18,7 @@ export interface ResponseKaspiDto {
    * Возвращая result=0 на запрос «pay», провайдер сообщает об успешном завершении операции пополнения баланса.
    * Система полностью завершает обработку данной транзакции.
    */
-  result: string;
+  result: KaspiResult;
 
   /**
    * необходимая сумма платежа по запрашиваемому лицевому счету, номеру заказа и т.д.,

@@ -1,4 +1,5 @@
 import { PaymentType } from '../entities/payment.entity';
+import { KaspiResult } from '../../kaspiapi/types/KaspiResult';
 
 export class CreatePaymentDto {
   datetime: string;
@@ -9,7 +10,7 @@ export class CreatePaymentDto {
 
   txn_id?: string;
 
-  result: string;
+  result: KaspiResult;
 
   comment?: string;
 

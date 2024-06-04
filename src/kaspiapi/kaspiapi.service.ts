@@ -5,6 +5,7 @@ import { PayRequestKaspiDto } from './dto/pay.request.kaspi.dto';
 import { WsDeviceSubscribeController } from '../posts-ws/ws.device.subscribe.controller';
 import { PaymentsService } from '../payments/payments.service';
 import { PaymentsEntity } from '../payments/entities/payment.entity';
+import { KaspiResult } from './types/KaspiResult';
 
 @Injectable()
 export class KaspiapiService {
@@ -16,25 +17,33 @@ export class KaspiapiService {
   async check(
     createKaspiapiDto: CheckRequestKaspiDto,
   ): Promise<ResponseKaspiDto> {
-    const result = await this.wsDeviceSubscribeController
-      .checkDevice(1, createKaspiapiDto.txn_id, createKaspiapiDto)
-      .then(() => '1')
-      .catch(() => '0');
+    const result: KaspiResult = await this.wsDeviceSubscribeController
+      .checkDevice(
+        +createKaspiapiDto.device_id,
+        createKaspiapiDto.txn_id,
+        createKaspiapiDto,
+      )
+      .then(() => 0 as KaspiResult)
+      .catch(() => 1 as KaspiResult);
 
     return {
       comment: createKaspiapiDto.comment,
       sum: createKaspiapiDto.sum + '',
       pry_txn_id: createKaspiapiDto.txn_id,
       txn_id: createKaspiapiDto.txn_id,
-      result: result,
+      result,
     };
   }
 
   async pay(createKaspiapiDto: PayRequestKaspiDto): Promise<ResponseKaspiDto> {
-    const result = await this.wsDeviceSubscribeController
-      .payDevice(1, createKaspiapiDto.txn_id, createKaspiapiDto)
-      .then(() => '1')
-      .catch(() => '0');
+    const result: KaspiResult = await this.wsDeviceSubscribeController
+      .payDevice(
+        +createKaspiapiDto.device_id,
+        createKaspiapiDto.txn_id,
+        createKaspiapiDto,
+      )
+      .then(() => 0 as KaspiResult)
+      .catch(() => 1 as KaspiResult);
 
     const getDate = (date: Date) => {
       return (
@@ -46,9 +55,6 @@ export class KaspiapiService {
       );
     };
 
-    // TODO calculate
-    const device = 2;
-    console.log(new Date(createKaspiapiDto.txn_date * 1000).toJSON());
     const savedPayment: PaymentsEntity = await this.paymentsService.create({
       sum: createKaspiapiDto.sum + '',
       comment: createKaspiapiDto.comment,
@@ -56,7 +62,7 @@ export class KaspiapiService {
       date: getDate(new Date(createKaspiapiDto.txn_date * 1000)),
       txn_id: createKaspiapiDto.txn_id,
       result,
-      device,
+      device: +createKaspiapiDto.device_id,
     });
 
     return {
