@@ -10,8 +10,4 @@ export class CreatePostDto extends PostEntity {
   @IsString()
   @ApiProperty({ required: true })
   address!: string;
-
-  @IsString()
-  @ApiProperty({ required: true })
-  identifier!: string;
 }

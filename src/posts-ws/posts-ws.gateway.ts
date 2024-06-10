@@ -43,7 +43,7 @@ export class PostsWsGateway {
     @MessageBody() cashPaymentWsDto: CashPaymentWsDto,
   ): Promise<WsResponse<PaymentsEntity>> {
     return {
-      event: 'ping',
+      event: 'cash-payment',
       data: await this.postsWsService.cashPayment(
         client.data.postId,
         cashPaymentWsDto,

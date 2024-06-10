@@ -11,9 +11,6 @@ export class PostEntity {
   @Column()
   address: string;
 
-  @Column()
-  identifier: string;
-
   @Column({ type: 'bigint', default: () => 'round(EXTRACT(epoch FROM now()))' })
   created: string;
 
