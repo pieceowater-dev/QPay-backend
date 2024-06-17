@@ -4,6 +4,7 @@ import {
   MessageBody,
   WsResponse,
   ConnectedSocket,
+  OnGatewayConnection,
 } from '@nestjs/websockets';
 import { PostsWsService } from './posts-ws.service';
 import { Socket } from 'socket.io';
@@ -18,26 +19,33 @@ import { AuthWsGuard } from '../auth-ws/auth-ws.guard';
 
 @WebSocketGateway()
 @ApiBearerAuth(AuthTypes.JWT)
-@UseGuards(AuthWsGuard)
-export class PostsWsGateway {
+export class PostsWsGateway implements OnGatewayConnection {
   constructor(private readonly postsWsService: PostsWsService) {}
 
+  handleConnection(client: any, ...args: any[]): any {
+    console.log('New connection!', client, args);
+  }
+
   @SubscribeMessage('subscribe')
+  @UseGuards(AuthWsGuard)
   subscribe(@ConnectedSocket() client: Socket): WsResponse<'OK'> {
     return this.postsWsService.subscribe(client.data.postId, client);
   }
 
   @SubscribeMessage('kaspi-check')
+  @UseGuards(AuthWsGuard)
   kaspiCheck(@MessageBody() kaspiCheckWsDTO: KaspiCheckWsDto): void {
     return this.postsWsService.kaspiCheck(kaspiCheckWsDTO);
   }
 
   @SubscribeMessage('kaspi-pay')
+  @UseGuards(AuthWsGuard)
   kaspiPay(@MessageBody() kaspiPayWsDTO: KaspiPayWsDto): void {
     return this.postsWsService.kaspiPay(kaspiPayWsDTO);
   }
 
   @SubscribeMessage('cash-payment')
+  @UseGuards(AuthWsGuard)
   async cashPayment(
     @ConnectedSocket() client: Socket,
     @MessageBody() cashPaymentWsDto: CashPaymentWsDto,
