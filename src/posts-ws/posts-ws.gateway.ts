@@ -61,6 +61,8 @@ export class PostsWsGateway implements OnGatewayConnection {
 
   @SubscribeMessage('ping')
   ping(): WsResponse<string> {
+    console.log('[ping-pong] They said me: "ping"');
+    console.log('[ping-pong] I said: "pong"');
     return { event: 'ping', data: 'pong' };
   }
 }
