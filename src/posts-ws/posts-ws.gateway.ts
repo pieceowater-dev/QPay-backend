@@ -23,7 +23,7 @@ export class PostsWsGateway implements OnGatewayConnection {
   constructor(private readonly postsWsService: PostsWsService) {}
 
   handleConnection(client: any, ...args: any[]): any {
-    console.log('New connection!', client, args);
+    console.log('New connection!', client.handshake, args);
   }
 
   @SubscribeMessage('subscribe')

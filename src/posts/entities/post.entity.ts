@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PostsUsersAccess } from '../../posts-users-access/entities/posts-users-access.entity';
+
 @Entity('posts')
 export class PostEntity {
   @PrimaryGeneratedColumn()
@@ -10,6 +11,9 @@ export class PostEntity {
 
   @Column()
   address: string;
+
+  @Column({ nullable: true })
+  bin: string;
 
   @Column({ type: 'bigint', default: () => 'round(EXTRACT(epoch FROM now()))' })
   created: string;

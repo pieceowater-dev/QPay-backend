@@ -1,35 +1,46 @@
 import { Injectable } from '@nestjs/common';
-import { ResponseKaspiDto } from './dto/response.kaspi.dto';
+import {
+  ResponseKaspiCheckDto,
+  ResponseKaspiPayDto,
+} from './dto/response.kaspi.dto';
 import { CheckRequestKaspiDto } from './dto/check.request.kaspi.dto';
 import { PayRequestKaspiDto } from './dto/pay.request.kaspi.dto';
 import { WsDeviceSubscribeController } from '../posts-ws/ws.device.subscribe.controller';
 import { PaymentsService } from '../payments/payments.service';
 import { PaymentsEntity } from '../payments/entities/payment.entity';
 import { KaspiResult } from './types/KaspiResult';
+import { KASPY_TARIFFS } from './const/tariffs';
+import { PostsService } from '../posts/posts.service';
 
 @Injectable()
 export class KaspiapiService {
   constructor(
     private readonly wsDeviceSubscribeController: WsDeviceSubscribeController,
     private readonly paymentsService: PaymentsService,
+    private readonly postsService: PostsService,
   ) {}
 
   async check(
     createKaspiapiDto: CheckRequestKaspiDto,
-  ): Promise<ResponseKaspiDto> {
-    const result: KaspiResult = await this.wsDeviceSubscribeController
-      .checkDevice(
-        +createKaspiapiDto.device_id,
-        createKaspiapiDto.txn_id,
-        createKaspiapiDto,
-      )
-      .then(() => 0 as KaspiResult)
-      .catch(() => 1 as KaspiResult);
+  ): Promise<ResponseKaspiCheckDto> {
+    const post = await this.postsService.findOne(+createKaspiapiDto.device_id);
+
+    const result: KaspiResult =
+      post !== null && post.bin !== null
+        ? await this.wsDeviceSubscribeController
+            .checkDevice(
+              +createKaspiapiDto.device_id,
+              createKaspiapiDto.txn_id,
+              createKaspiapiDto,
+            )
+            .then(() => 0 as KaspiResult)
+            .catch(() => 1 as KaspiResult)
+        : 1;
 
     return {
-      comment: createKaspiapiDto.comment,
+      bin: post.bin,
+      tariffs: KASPY_TARIFFS,
       sum: createKaspiapiDto.sum + '',
-      pry_txn_id: createKaspiapiDto.txn_id,
       txn_id: createKaspiapiDto.txn_id,
       result,
     };
@@ -37,11 +48,12 @@ export class KaspiapiService {
 
   private async checkExistsPayment(
     createKaspiapiDto: PayRequestKaspiDto,
-  ): Promise<ResponseKaspiDto | undefined> {
+  ): Promise<ResponseKaspiPayDto> {
     const existsPayment: PaymentsEntity =
       await this.paymentsService.findPaymentByTXNID(createKaspiapiDto.txn_id);
     if (existsPayment) {
       return {
+        bin: null,
         comment: createKaspiapiDto.comment,
         sum: createKaspiapiDto.sum + '',
         txn_id: createKaspiapiDto.txn_id,
@@ -62,23 +74,29 @@ export class KaspiapiService {
     );
   }
 
-  async pay(createKaspiapiDto: PayRequestKaspiDto): Promise<ResponseKaspiDto> {
+  async pay(
+    createKaspiapiDto: PayRequestKaspiDto,
+  ): Promise<ResponseKaspiPayDto> {
+    const post = await this.postsService.findOne(+createKaspiapiDto.device_id);
     const existsPayment = await this.checkExistsPayment(createKaspiapiDto);
     if (existsPayment) {
       return existsPayment;
     }
 
-    const result: KaspiResult = await this.wsDeviceSubscribeController
-      .payDevice(
-        +createKaspiapiDto.device_id,
-        createKaspiapiDto.txn_id,
-        createKaspiapiDto,
-      )
-      .then(() => 0 as KaspiResult)
-      .catch((e) => {
-        console.log(e);
-        return 1 as KaspiResult;
-      });
+    const result: KaspiResult =
+      post !== null && post.bin !== null
+        ? await this.wsDeviceSubscribeController
+            .payDevice(
+              +createKaspiapiDto.device_id,
+              createKaspiapiDto.txn_id,
+              createKaspiapiDto,
+            )
+            .then(() => 0 as KaspiResult)
+            .catch((e) => {
+              console.log(e);
+              return 1 as KaspiResult;
+            })
+        : 1;
 
     const savedPayment: PaymentsEntity = await this.paymentsService.create({
       sum: createKaspiapiDto.sum + '',
@@ -92,7 +110,8 @@ export class KaspiapiService {
 
     return {
       ...savedPayment,
-      pry_txn_id: createKaspiapiDto.txn_id,
+      bin: post.bin,
+      pry_txn_id: savedPayment.id + '',
     };
   }
 }
