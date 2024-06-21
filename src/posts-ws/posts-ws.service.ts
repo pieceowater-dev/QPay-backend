@@ -54,7 +54,7 @@ export class PostsWsService {
       datetime: ((+new Date() / 1000) | 0) + '',
       date: new Date().toJSON().substr(0, 10),
       device: deviceId,
-      result: 1,
+      result: 0,
     });
   }
 }
