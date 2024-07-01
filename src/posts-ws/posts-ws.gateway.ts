@@ -23,12 +23,17 @@ export class PostsWsGateway implements OnGatewayConnection {
   constructor(private readonly postsWsService: PostsWsService) {}
 
   handleConnection(client: any, ...args: any[]): any {
-    console.log('New connection!', client.handshake, args);
+    console.log('New connection!');
+    console.log('Handshake: ', client.handshake);
+    console.log('Args: ', args);
   }
 
   @SubscribeMessage('subscribe')
   @UseGuards(AuthWsGuard)
   subscribe(@ConnectedSocket() client: Socket): WsResponse<'OK'> {
+    console.log(
+      `subscribed user-agent: ${client.handshake.headers['user-agent']}`,
+    );
     return this.postsWsService.subscribe(client.data.postId, client);
   }
 
