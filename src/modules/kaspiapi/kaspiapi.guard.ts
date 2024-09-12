@@ -16,7 +16,7 @@ export class IpAndMethodGuard implements CanActivate {
     const clientIp = request.ip;
     const method = request.method;
 
-    console.log('IpAndMethodGuard', { clientIp, method });
+    console.log('IpAndMethodGuard', { clientIp, method, request });
 
     if (method !== this.allowedMethod) {
       throw new ForbiddenException('Only GET requests are allowed');
