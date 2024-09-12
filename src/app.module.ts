@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+import { AuthModule } from './authorization/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PostsModule } from './posts/posts.module';
+import { PostsModule } from './modules/posts/posts.module';
 import { HealthController } from './health.controller';
-import { config } from './config';
-import { DatabaseModule } from './database/database.module';
+import { config } from './core/config';
+import { DatabaseModule } from './core/database/database.module';
 import { JwtModule } from '@nestjs/jwt';
-import { PostsWsModule } from './posts-ws/posts-ws.module';
-import { KaspiapiModule } from './kaspiapi/kaspiapi.module';
-import { PaymentsModule } from './payments/payments.module';
-import { PostsUsersAccessModule } from './posts-users-access/posts-users-access.module';
-import { PostTokenModule } from './post-token/post-token.module';
+import { PostsWsModule } from './modules/posts-ws/posts-ws.module';
+import { KaspiapiModule } from './modules/kaspiapi/kaspiapi.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { PostsUsersAccessModule } from './modules/posts-users-access/posts-users-access.module';
+import { PostTokenModule } from './modules/post-token/post-token.module';
 
 @Module({
   imports: [
