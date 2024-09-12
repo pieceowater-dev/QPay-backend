@@ -5,11 +5,10 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import * as ipRangeCheck from 'ip-range-check';
 
 @Injectable()
 export class IpAndMethodGuard implements CanActivate {
-  private readonly allowedSubnet = '194.187.247.0/24';
+  private readonly allowedIp = '194.187.247.152';
   private readonly allowedMethod = 'GET';
 
   canActivate(context: ExecutionContext): boolean {
@@ -22,8 +21,8 @@ export class IpAndMethodGuard implements CanActivate {
     }
 
     const clientIp = this.getClientIp(request);
-    if (!ipRangeCheck(clientIp, this.allowedSubnet)) {
-      console.log('Requests from this IP are not allowed');
+
+    if (clientIp !== this.allowedIp) {
       throw new ForbiddenException('Requests from this IP are not allowed');
     }
 
