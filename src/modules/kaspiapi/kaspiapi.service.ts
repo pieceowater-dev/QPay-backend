@@ -38,7 +38,7 @@ export class KaspiapiService {
         : 1;
 
     return {
-      bin: post.bin,
+      bin: post?.bin,
       tariffs: KASPY_TARIFFS,
       sum: createKaspiapiDto.sum + '',
       txn_id: createKaspiapiDto.txn_id,

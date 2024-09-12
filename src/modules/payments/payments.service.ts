@@ -72,7 +72,7 @@ export class PaymentsService {
       .andWhere(
         () =>
           filter.date.start !== undefined && filter.date.end !== undefined
-            ? `datetime BETWEEN :start AND :end`
+            ? `createdAt BETWEEN :start AND :end`
             : `true`,
         { ...filter.date },
       )
@@ -99,7 +99,7 @@ export class PaymentsService {
       .andWhere(
         () =>
           filter.date.start !== undefined && filter.date.end !== undefined
-            ? `datetime BETWEEN :start AND :end`
+            ? `createdAt BETWEEN :start AND :end`
             : `true`,
         { ...filter.date },
       )
@@ -113,7 +113,10 @@ export class PaymentsService {
   ): Promise<ReportDayDebitResponseDto> {
     return await this.paymentsEntityRepository
       .createQueryBuilder('post')
-      .select('date', 'date')
+      .select(
+        'to_char(to_timestamp("createdAt"), \'YYYY-MM-DD\') AS payment_date',
+        'date',
+      )
       .addSelect('COUNT(1)', 'count')
       .addSelect('SUM(sum::numeric::float8)', 'sum')
       .where('true')
@@ -125,7 +128,7 @@ export class PaymentsService {
       .andWhere(
         () =>
           filter.date.start !== undefined && filter.date.end !== undefined
-            ? `datetime BETWEEN :start AND :end`
+            ? `createdAt BETWEEN :start AND :end`
             : `true`,
         { ...filter.date },
       )
