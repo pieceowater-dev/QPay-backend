@@ -11,7 +11,6 @@ export class PaymentsFilterPipe implements PipeTransform {
       : typeof value.devices === 'undefined'
         ? value.devices
         : [value.devices];
-    console.log(value);
     return plainToInstance(metadata.metatype, {
       pagination: {
         skip: value.skip,
