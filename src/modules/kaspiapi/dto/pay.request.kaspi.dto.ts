@@ -12,7 +12,7 @@ export interface PayRequestKaspiDto {
    * */
   txn_id: string;
 
-  txn_date: number;
+  txn_date: string;
 
   /**
    * идентификатор абонента/номера заказа в информационной системе провайдера

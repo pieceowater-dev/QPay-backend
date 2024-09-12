@@ -26,7 +26,7 @@ export class KaspiapiService {
     const post = await this.postsService.findOne(+createKaspiapiDto.device_id);
 
     const result: KaspiResult =
-      post !== null && post.bin !== null
+      post !== null && post.bin !== null && !post.stopped && !post.deleted
         ? await this.wsDeviceSubscribeController
             .checkDevice(
               +createKaspiapiDto.device_id,
@@ -84,7 +84,7 @@ export class KaspiapiService {
     }
 
     const result: KaspiResult =
-      post !== null && post.bin !== null
+      post !== null && post.bin !== null && !post.stopped && !post.deleted
         ? await this.wsDeviceSubscribeController
             .payDevice(
               +createKaspiapiDto.device_id,
@@ -101,8 +101,7 @@ export class KaspiapiService {
     const savedPayment: PaymentsEntity = await this.paymentsService.create({
       sum: createKaspiapiDto.sum + '',
       comment: createKaspiapiDto.comment,
-      datetime: createKaspiapiDto.txn_date + '',
-      date: this.getDate(new Date(createKaspiapiDto.txn_date * 1000)),
+      datetime: createKaspiapiDto.txn_date,
       txn_id: createKaspiapiDto.txn_id,
       result,
       device: +createKaspiapiDto.device_id,

@@ -1,11 +1,3 @@
-interface DbConfiguration {
-  host: string;
-  port: number;
-  username: string;
-  password: string;
-  database: string;
-}
-
 interface RootUser {
   name: string;
   email: string;
@@ -15,6 +7,5 @@ interface RootUser {
 export interface IConfig {
   secret: string;
   port: number;
-  db: DbConfiguration;
   root: RootUser;
 }

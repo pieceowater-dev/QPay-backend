@@ -51,8 +51,6 @@ export class PostsWsService {
     return await this.paymentsService.create({
       sum: cashPaymentWsDto.sum + '',
       type: PaymentType.CASH,
-      datetime: ((+new Date() / 1000) | 0) + '',
-      date: new Date().toJSON().substr(0, 10),
       device: deviceId,
       result: 0,
     });

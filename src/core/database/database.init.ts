@@ -10,6 +10,7 @@ export const databaseInit = async (
   source: DataSource,
   configService: ConfigService,
 ) => {
+  await source.runMigrations();
   const users = await source.getRepository(UserEntity).count();
   if (users === 0) {
     const user = plainToInstance(UserEntity, {

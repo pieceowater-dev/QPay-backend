@@ -14,12 +14,13 @@ import { KaspiapiModule } from './modules/kaspiapi/kaspiapi.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { PostsUsersAccessModule } from './modules/posts-users-access/posts-users-access.module';
 import { PostTokenModule } from './modules/post-token/post-token.module';
+import typeorm from './core/config/typeorm';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [config],
+      load: [config, typeorm],
     }),
     JwtModule.registerAsync({
       inject: [ConfigService],

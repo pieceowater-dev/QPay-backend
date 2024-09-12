@@ -2,9 +2,7 @@ import { PaymentType } from '../entities/payment.entity';
 import { KaspiResult } from '../../kaspiapi/types/KaspiResult';
 
 export class CreatePaymentDto {
-  datetime: string;
-
-  date: string;
+  datetime?: string;
 
   sum: string;
 
