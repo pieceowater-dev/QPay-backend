@@ -7,7 +7,10 @@ import { CheckRequestKaspiDto } from './dto/check.request.kaspi.dto';
 import { PayRequestKaspiDto } from './dto/pay.request.kaspi.dto';
 import { WsDeviceSubscribeController } from '../posts-ws/ws.device.subscribe.controller';
 import { PaymentsService } from '../payments/payments.service';
-import { PaymentsEntity } from '../payments/entities/payment.entity';
+import {
+  PaymentsEntity,
+  PaymentType,
+} from '../payments/entities/payment.entity';
 import { KaspiResult } from './types/KaspiResult';
 import { KASPY_TARIFFS } from './const/tariffs';
 import { PostsService } from '../posts/posts.service';
@@ -99,6 +102,7 @@ export class KaspiapiService {
         : 1;
 
     const savedPayment: PaymentsEntity = await this.paymentsService.create({
+      type: PaymentType.CASHLESS,
       sum: createKaspiapiDto.sum + '',
       comment: createKaspiapiDto.comment,
       datetime: createKaspiapiDto.txn_date,

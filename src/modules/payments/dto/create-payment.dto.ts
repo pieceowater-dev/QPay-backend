@@ -14,5 +14,5 @@ export class CreatePaymentDto {
 
   device: number;
 
-  type?: PaymentType;
+  type: PaymentType;
 }
