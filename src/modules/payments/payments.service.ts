@@ -72,7 +72,7 @@ export class PaymentsService {
       .andWhere(
         () =>
           filter.date.start !== undefined && filter.date.end !== undefined
-            ? `createdAt BETWEEN :start AND :end`
+            ? `"createdAt" BETWEEN :start AND :end`
             : `true`,
         { ...filter.date },
       )
@@ -99,7 +99,7 @@ export class PaymentsService {
       .andWhere(
         () =>
           filter.date.start !== undefined && filter.date.end !== undefined
-            ? `createdAt BETWEEN :start AND :end`
+            ? `"createdAt" BETWEEN :start AND :end`
             : `true`,
         { ...filter.date },
       )
@@ -128,7 +128,7 @@ export class PaymentsService {
       .andWhere(
         () =>
           filter.date.start !== undefined && filter.date.end !== undefined
-            ? `createdAt BETWEEN :start AND :end`
+            ? `"createdAt" BETWEEN :start AND :end`
             : `true`,
         { ...filter.date },
       )
