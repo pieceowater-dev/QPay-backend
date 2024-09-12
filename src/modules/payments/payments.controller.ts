@@ -47,7 +47,7 @@ export class PaymentsController {
   dayDebit(
     @Query(PaymentsReportFilterPipe) filter: FilterDayDebitDto,
   ): Promise<ReportDayDebitResponseDto> {
-    return this.paymentsService.getPayDebit(filter);
+    return this.paymentsService.getDayDebit(filter);
   }
 
   @Get(':id')

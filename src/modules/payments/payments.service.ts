@@ -108,15 +108,12 @@ export class PaymentsService {
       .getRawMany<ReportPiePostsResponseDto>();
   }
 
-  async getPayDebit(
+  async getDayDebit(
     filter: FilterDayDebitDto,
   ): Promise<ReportDayDebitResponseDto> {
     return await this.paymentsEntityRepository
       .createQueryBuilder('post')
-      .select(
-        'to_char(to_timestamp("createdAt"), \'YYYY-MM-DD\') AS payment_date',
-        'date',
-      )
+      .select('to_char(to_timestamp("createdAt"), \'YYYY-MM-DD\')', 'date')
       .addSelect('COUNT(1)', 'count')
       .addSelect('SUM(sum::numeric::float8)', 'sum')
       .where('true')
