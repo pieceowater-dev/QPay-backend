@@ -19,7 +19,7 @@ jobs:
 
       - name: Extract repository name
         id: extract_repo_name
-        run: echo "REPO_NAME=$(echo ${{ github.repository }} | cut -d'/' -f2)" >> $GITHUB_ENV
+        run: echo "REPO_NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]' | cut -d'/' -f2)" >> $GITHUB_ENV
 
       - name: Clone & Update repository
         run: |
