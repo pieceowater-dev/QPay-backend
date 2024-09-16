@@ -1,0 +1,32 @@
+name: Compose
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get short commit SHA
+        id: get_sha
+        run: echo "GIT_SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+      - name: Extract repository name
+        id: extract_repo_name
+        run: echo "REPO_NAME=$(echo ${{ github.repository }} | cut -d'/' -f2)" >> $GITHUB_ENV
+
+      - name: Clone & Update repository
+        run: |
+          git clone https://x-access-token:${{ secrets.GIT_PAT }}@github.com/${{ github.repository_owner }}/qpay.git target-repo
+          cd target-repo
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          sed -i "s|\(image: .*${{ env.REPO_NAME }}:\).*|\1${{ env.GIT_SHORT_SHA }}|" res/apps/${{ env.REPO_NAME }}/docker-compose.yaml
+          git commit -am "Update Docker Compose image tag to $GIT_SHORT_SHA"
+          git push origin main
