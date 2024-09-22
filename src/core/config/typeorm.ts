@@ -1,7 +1,7 @@
 import { registerAs } from '@nestjs/config';
 import { config as dotenvConfig } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import fs from 'fs';
+import * as fs from 'fs';
 
 dotenvConfig({ path: '.env' });
 
