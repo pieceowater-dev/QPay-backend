@@ -6,6 +6,7 @@ import { AuthTypes } from './authorization/auth/enums/auth.types';
 import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
+  console.log(`Starting...`);
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors();
