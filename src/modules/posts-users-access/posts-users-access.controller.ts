@@ -16,9 +16,11 @@ import { PostsUsersAccess } from './entities/posts-users-access.entity';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../../auth.guard';
 import { AuthTypes } from '../../authorization/auth/enums/auth.types';
+import { AuthRoleGuard } from '../../auth.role.guard';
+import { UserRoles } from '../users/entities/user.entity';
 
 @ApiTags('PostsUsersAccess')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, new AuthRoleGuard(UserRoles.ADMINISTRATOR))
 @ApiBearerAuth(AuthTypes.JWT)
 @Controller('posts-users-access')
 export class PostsUsersAccessController {

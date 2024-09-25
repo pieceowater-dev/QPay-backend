@@ -4,10 +4,9 @@ import { PostsController } from './posts.controller';
 import { postProviders } from './post.provider';
 import { DatabaseModule } from '../../core/database/database.module';
 import { GlobalJwtModule } from '../../core/jwt/jwt.module';
-import { PostsUsersAccessModule } from '../posts-users-access/posts-users-access.module';
 
 @Module({
-  imports: [DatabaseModule, GlobalJwtModule, PostsUsersAccessModule],
+  imports: [DatabaseModule, GlobalJwtModule],
   controllers: [PostsController],
   providers: [...postProviders, PostsService],
   exports: [PostsService],

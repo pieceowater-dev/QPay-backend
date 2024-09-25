@@ -17,6 +17,8 @@ import { AuthTypes } from '../../authorization/auth/enums/auth.types';
 import { AuthGuard } from '../../auth.guard';
 import { DefaultFilter } from '../../utils/default/default.filter';
 import { DefaultFilterPipe } from '../../utils/default/default.filter.pipe';
+import { AuthRoleGuard } from '../../auth.role.guard';
+import { UserRoles } from '../users/entities/user.entity';
 
 @ApiTags('Posts')
 @UseGuards(AuthGuard)
@@ -25,9 +27,10 @@ import { DefaultFilterPipe } from '../../utils/default/default.filter.pipe';
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  @UseGuards(new AuthRoleGuard(UserRoles.ADMINISTRATOR))
   @Post()
-  create(@Body() createPostDto: CreatePostDto, @Req() req: any) {
-    return this.postsService.create(createPostDto, req.user);
+  create(@Body() createPostDto: CreatePostDto) {
+    return this.postsService.create(createPostDto);
   }
 
   @Get()
@@ -40,12 +43,9 @@ export class PostsController {
     return this.postsService.findOne(+id);
   }
 
+  @UseGuards(new AuthRoleGuard(UserRoles.ADMINISTRATOR))
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updatePostDto: UpdatePostDto,
-    @Req() req: any,
-  ) {
-    return this.postsService.update(+id, updatePostDto, req.user);
+  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+    return this.postsService.update(+id, updatePostDto);
   }
 }

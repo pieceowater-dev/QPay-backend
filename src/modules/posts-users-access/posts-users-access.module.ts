@@ -9,6 +9,5 @@ import { postsUsersAccessProvider } from './posts-users-access.provider';
   imports: [DatabaseModule, GlobalJwtModule],
   controllers: [PostsUsersAccessController],
   providers: [PostsUsersAccessService, ...postsUsersAccessProvider],
-  exports: [PostsUsersAccessService],
 })
 export class PostsUsersAccessModule {}

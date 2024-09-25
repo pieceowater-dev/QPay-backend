@@ -27,7 +27,7 @@ import typeorm from './core/config/typeorm';
       useFactory: (configService: ConfigService) => ({
         global: true,
         secret: configService.get<string>('SECRET_KEY'),
-        signOptions: { expiresIn: '60m' },
+        signOptions: { expiresIn: '1d' },
       }),
     }),
     AuthModule,
