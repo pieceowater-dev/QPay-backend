@@ -26,8 +26,11 @@ export class KaspiapiService {
   async check(
     createKaspiapiDto: CheckRequestKaspiDto,
   ): Promise<ResponseKaspiCheckDto> {
+    console.log('[KASPI-CHECK] Start');
     const post = await this.postsService.findOne(+createKaspiapiDto.device_id);
-
+    console.log(
+      `[KASPI-CHECK] Post: id: ${post?.id}, bin: ${post?.bin}, stopped: ${post?.stopped}, deleted: ${post?.deleted}`,
+    );
     const result: KaspiResult =
       post !== null && post.bin !== null && !post.stopped && !post.deleted
         ? await this.wsDeviceSubscribeController
@@ -39,6 +42,8 @@ export class KaspiapiService {
             .then(() => 0 as KaspiResult)
             .catch(() => 1 as KaspiResult)
         : 1;
+
+    console.log(`[KASPI-CHECK] Device check result: ${result}`);
 
     return {
       bin: post?.bin,

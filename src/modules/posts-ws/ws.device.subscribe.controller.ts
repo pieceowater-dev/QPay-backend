@@ -54,14 +54,29 @@ export class WsDeviceSubscribeController {
     key: string,
     data: T,
   ): Promise<string> {
+    console.log(`[DEVICE-CHECK] START deviceId: ${deviceId}, key: ${key}`);
     const socket = this.getByDeviceId(deviceId);
+    console.log(
+      `[DEVICE-CHECK] SOCKET socketId: ${socket.id}, deviceId: ${deviceId}, key: ${key}`,
+    );
     socket.emit(eventKey, data);
+    console.log(
+      `[DEVICE-CHECK] SOCKET EMIT eventKey: ${eventKey}, deviceId: ${deviceId}, key: ${key}`,
+    );
     const promise = new Promise<string>((resolve) => {
       this.deviceActionMap.set(key, { resolver: resolve });
     });
     return await Promise.race([
-      promise,
+      promise.then((result) => {
+        console.log(
+          `[DEVICE-CHECK] PROMISE SOLVED eventKey: ${eventKey}, deviceId: ${deviceId}, key: ${key}`,
+        );
+        return result;
+      }),
       this.wait(5000).then((e) => {
+        console.log(
+          `[DEVICE-CHECK] TIMEOUT, deviceId: ${deviceId}, key: ${key}`,
+        );
         throw e;
       }),
     ]);
