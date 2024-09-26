@@ -26,7 +26,7 @@ export class PostsService {
   ): Promise<PaginatedList<PostEntity>> {
     return await this.postRepository
       .findAndCount({
-        relations: ['posts'],
+        relations: ['posts', 'posts.user'],
         where: {
           name:
             filter.search != null
@@ -49,7 +49,10 @@ export class PostsService {
   }
 
   async findOne(id: number): Promise<PostEntity | null> {
-    return await this.postRepository.findOneBy({ id });
+    return await this.postRepository.findOne({
+      relations: ['posts', 'posts.user'],
+      where: { id },
+    });
   }
 
   async findOneOrFail(id: number): Promise<PostEntity> {

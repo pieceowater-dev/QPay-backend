@@ -18,6 +18,7 @@ import { AuthGuard } from '../../auth.guard';
 import { AuthTypes } from '../../authorization/auth/enums/auth.types';
 import { AuthRoleGuard } from '../../auth.role.guard';
 import { UserRoles } from '../users/entities/user.entity';
+import { UpdateUserAccessByPostDto } from './dto/update-user-access-by-post.dto';
 
 @ApiTags('PostsUsersAccess')
 @UseGuards(AuthGuard, new AuthRoleGuard(UserRoles.ADMINISTRATOR))
@@ -43,6 +44,17 @@ export class PostsUsersAccessController {
   @Get('/post/:id')
   async findOneByPost(@Param('id') id: string): Promise<PostsUsersAccess[]> {
     return await this.postsUsersAccessService.findOneByPost(+id);
+  }
+
+  @Patch('/post/:post')
+  async updateUserAccessByPost(
+    @Param('post') post: string,
+    @Body() updateUserAccessByPostDto: UpdateUserAccessByPostDto,
+  ): Promise<string> {
+    return await this.postsUsersAccessService.updateUserAccessByPost(
+      +post,
+      updateUserAccessByPostDto,
+    );
   }
 
   @Patch()

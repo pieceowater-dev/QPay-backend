@@ -6,6 +6,7 @@ import { Equal, Repository } from 'typeorm';
 import { PostEntity } from '../posts/entities/post.entity';
 import { UserEntity } from '../users/entities/user.entity';
 import { plainToInstance } from 'class-transformer';
+import { UpdateUserAccessByPostDto } from './dto/update-user-access-by-post.dto';
 
 @Injectable()
 export class PostsUsersAccessService {
@@ -54,6 +55,38 @@ export class PostsUsersAccessService {
       post: plainToInstance(PostEntity, e.post),
     }));
     return await this.postsUsersAccessRepository.save(entities);
+  }
+
+  async updateUserAccessByPost(
+    post: number,
+    updateUserAccessByPostDto: UpdateUserAccessByPostDto,
+  ): Promise<string> {
+    return await this.postsUsersAccessRepository.manager.transaction(
+      async (em) => {
+        await em
+          .getRepository(PostsUsersAccess)
+          .createQueryBuilder()
+          .delete()
+          .where({
+            post,
+          })
+          .execute();
+
+        await em
+          .getRepository(PostsUsersAccess)
+          .createQueryBuilder()
+          .insert()
+          .values(
+            updateUserAccessByPostDto.users.map((user) => ({
+              user: { id: user },
+              post: { id: post },
+            })),
+          )
+          .execute();
+
+        return 'OK';
+      },
+    );
   }
 
   async checkAccess(
