@@ -45,6 +45,14 @@ export class KaspiapiService {
 
     console.log(`[KASPI-CHECK] Device check result: ${result}`);
 
+    console.log(`[KASPI-CHECK] Result:`, {
+      bin: post?.bin,
+      tariffs: KASPY_TARIFFS,
+      sum: createKaspiapiDto.sum + '',
+      txn_id: createKaspiapiDto.txn_id,
+      result,
+    });
+
     return {
       bin: post?.bin,
       tariffs: KASPY_TARIFFS,
