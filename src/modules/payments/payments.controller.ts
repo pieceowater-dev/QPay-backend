@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../../auth.guard';
@@ -25,29 +25,33 @@ export class PaymentsController {
   @Get()
   findAll(
     @Query(PaymentsFilterPipe) filter: FilterPaymentDto,
+    @Req() req: any,
   ): Promise<PaginatedList<PaymentsEntity>> {
-    return this.paymentsService.findPaginatedMany(filter);
+    return this.paymentsService.findPaginatedMany(filter, req.user);
   }
 
   @Get('pie-type')
   pieType(
     @Query(PaymentsReportFilterPipe) filter: FilterPieTypeDto,
+    @Req() req: any,
   ): Promise<ReportPieTypeResponseDto[]> {
-    return this.paymentsService.getTypePie(filter);
+    return this.paymentsService.getTypePie(filter, req.user);
   }
 
   @Get('pie-posts')
   piePosts(
     @Query(PaymentsReportFilterPipe) filter: FilterPiePostsDto,
+    @Req() req: any,
   ): Promise<ReportPiePostsResponseDto[]> {
-    return this.paymentsService.getPostsPie(filter);
+    return this.paymentsService.getPostsPie(filter, req.user);
   }
 
   @Get('day-debit')
   dayDebit(
     @Query(PaymentsReportFilterPipe) filter: FilterDayDebitDto,
+    @Req() req: any,
   ): Promise<ReportDayDebitResponseDto> {
-    return this.paymentsService.getDayDebit(filter);
+    return this.paymentsService.getDayDebit(filter, req.user);
   }
 
   @Get(':id')

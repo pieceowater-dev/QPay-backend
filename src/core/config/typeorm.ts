@@ -17,7 +17,7 @@ const config = {
   migrations: [path.join(__dirname, '../../core/**/migrations/*{.ts,.js}')],
   autoLoadEntities: true,
   synchronize: false,
-  logging: false,
+  logging: true,
   ssl:
     process.env.BUILD_MODE === 'local'
       ? undefined

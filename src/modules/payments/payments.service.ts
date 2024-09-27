@@ -11,6 +11,8 @@ import { ReportPieTypeResponseDto } from './dto/report.pie.type.response.dto';
 import { ReportPiePostsResponseDto } from './dto/report.pie.posts.response.dto';
 import { ReportDayDebitResponseDto } from './dto/report.day.debit.response.dto';
 import { FilterPiePostsDto } from './dto/filter.pie.posts.dto';
+import { TokenPayload } from '../../authorization/auth/interfaces/token.payload';
+import { UserRoles } from '../users/entities/user.entity';
 
 @Injectable()
 export class PaymentsService {
@@ -25,6 +27,7 @@ export class PaymentsService {
 
   async findPaginatedMany(
     filter: FilterPaymentDto,
+    user: TokenPayload,
   ): Promise<PaginatedList<PaymentsEntity>> {
     return await this.paymentsEntityRepository
       .findAndCount({
@@ -32,8 +35,13 @@ export class PaymentsService {
           comment: ILike(`%${filter.search ?? ''}%`),
           device: {
             id: filter.devices !== undefined ? Any(filter.devices) : undefined,
+            posts: {
+              user: {
+                id: user.id,
+              },
+            },
           },
-          datetime:
+          createdAt:
             filter.date.start !== undefined && filter.date.end !== undefined
               ? Between(filter.date.start + '', filter.date.end + '')
               : undefined,
@@ -57,52 +65,63 @@ export class PaymentsService {
 
   async getTypePie(
     filter: FilterPieTypeDto,
+    user: TokenPayload,
   ): Promise<ReportPieTypeResponseDto[]> {
-    return await this.paymentsEntityRepository
-      .createQueryBuilder()
+    const qb = this.paymentsEntityRepository
+      .createQueryBuilder('payments')
       .select('type', 'type')
       .addSelect('COUNT(1)', 'count')
       .addSelect('SUM(sum::numeric::float8)', 'sum')
-      .where('true')
-      .andWhere(
-        () =>
-          filter.posts !== undefined ? `"deviceId" = ANY(:posts)` : `true`,
-        { posts: filter.posts },
-      )
-      .andWhere(
-        () =>
-          filter.date.start !== undefined && filter.date.end !== undefined
-            ? `"createdAt" BETWEEN :start AND :end`
-            : `true`,
-        { ...filter.date },
-      )
-      .groupBy('type')
-      .getRawMany<ReportPieTypeResponseDto>();
+      .leftJoin('payments.device', 'device')
+      .leftJoin('device.posts', 'accesses')
+      .leftJoin('accesses.user', 'user');
+
+    if (user.role === UserRoles.MANAGER) {
+      qb.andWhere('user.id = :user', { user: user.id });
+    }
+
+    if (filter.posts !== undefined && filter.posts.length > 0) {
+      qb.andWhere(() => `"deviceId" = ANY(:posts)`, { posts: filter.posts });
+    }
+
+    if (filter.date.start !== undefined && filter.date.end !== undefined) {
+      qb.andWhere(() => `"createdAt" BETWEEN :start AND :end`, {
+        ...filter.date,
+      });
+    }
+
+    return await qb.groupBy('type').getRawMany<ReportPieTypeResponseDto>();
   }
 
   async getPostsPie(
     filter: FilterPiePostsDto,
+    user: TokenPayload,
   ): Promise<ReportPiePostsResponseDto[]> {
-    return await this.paymentsEntityRepository
-      .createQueryBuilder('post')
+    const qb = this.paymentsEntityRepository
+      .createQueryBuilder('payments')
       .select('device.id', 'id')
       .addSelect('device.name', 'name')
       .addSelect('COUNT(1)', 'count')
       .addSelect('SUM(sum::numeric::float8)', 'sum')
-      .leftJoin('post.device', 'device')
-      .where('true')
-      .andWhere(
-        () =>
-          filter.posts !== undefined ? `"deviceId" = ANY(:posts)` : `true`,
-        { posts: filter.posts },
-      )
-      .andWhere(
-        () =>
-          filter.date.start !== undefined && filter.date.end !== undefined
-            ? `"createdAt" BETWEEN :start AND :end`
-            : `true`,
-        { ...filter.date },
-      )
+      .leftJoin('payments.device', 'device')
+      .leftJoin('device.posts', 'accesses')
+      .leftJoin('accesses.user', 'user');
+
+    if (user.role === UserRoles.MANAGER) {
+      qb.andWhere('user.id = :user', { user: user.id });
+    }
+
+    if (filter.posts !== undefined && filter.posts.length > 0) {
+      qb.andWhere(() => `"deviceId" = ANY(:posts)`, { posts: filter.posts });
+    }
+
+    if (filter.date.start !== undefined && filter.date.end !== undefined) {
+      qb.andWhere(() => `"createdAt" BETWEEN :start AND :end`, {
+        ...filter.date,
+      });
+    }
+
+    return await qb
       .groupBy('device.id')
       .addGroupBy('device.name')
       .getRawMany<ReportPiePostsResponseDto>();
@@ -110,26 +129,31 @@ export class PaymentsService {
 
   async getDayDebit(
     filter: FilterDayDebitDto,
+    user: TokenPayload,
   ): Promise<ReportDayDebitResponseDto> {
-    return await this.paymentsEntityRepository
-      .createQueryBuilder('post')
+    const qb = this.paymentsEntityRepository
+      .createQueryBuilder('payments')
       .select('to_char(to_timestamp("createdAt"), \'YYYY-MM-DD\')', 'date')
       .addSelect('COUNT(1)', 'count')
       .addSelect('SUM(sum::numeric::float8)', 'sum')
-      .where('true')
-      .andWhere(
-        () =>
-          filter.posts !== undefined ? `"deviceId" = ANY(:posts)` : `true`,
-        { posts: filter.posts },
-      )
-      .andWhere(
-        () =>
-          filter.date.start !== undefined && filter.date.end !== undefined
-            ? `"createdAt" BETWEEN :start AND :end`
-            : `true`,
-        { ...filter.date },
-      )
-      .groupBy('date')
-      .getRawMany<ReportDayDebitResponseDto>();
+      .leftJoin('payments.device', 'device')
+      .leftJoin('device.posts', 'accesses')
+      .leftJoin('accesses.user', 'user');
+
+    if (user.role === UserRoles.MANAGER) {
+      qb.andWhere('user.id = :user', { user: user.id });
+    }
+
+    if (filter.posts !== undefined && filter.posts.length > 0) {
+      qb.andWhere(() => `"deviceId" = ANY(:posts)`, { posts: filter.posts });
+    }
+
+    if (filter.date.start !== undefined && filter.date.end !== undefined) {
+      qb.andWhere(() => `"createdAt" BETWEEN :start AND :end`, {
+        ...filter.date,
+      });
+    }
+
+    return await qb.groupBy('date').getRawMany<ReportDayDebitResponseDto>();
   }
 }
