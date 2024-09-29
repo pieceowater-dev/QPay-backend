@@ -10,12 +10,12 @@ import { PostsWsService } from './posts-ws.service';
 import { Socket } from 'socket.io';
 import { KaspiPayWsDto } from './dto/kaspi.pay.ws.dto';
 import { KaspiCheckWsDto } from './dto/kaspi.check.ws.dto';
-import { CashPaymentWsDto } from './dto/cashPaymentWsDto';
-import { PaymentsEntity } from '../payments/entities/payment.entity';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AuthTypes } from '../../authorization/auth/enums/auth.types';
 import { UseGuards } from '@nestjs/common';
 import { AuthWsGuard } from '../../authorization/auth-ws/auth-ws.guard';
+import { CashPaymentResponseWsDto } from './dto/cash-payment-response.ws.dto';
+import { CashPaymentWsDto } from './dto/cash-payment.ws.dto';
 
 @WebSocketGateway()
 @ApiBearerAuth(AuthTypes.JWT)
@@ -54,7 +54,7 @@ export class PostsWsGateway implements OnGatewayConnection {
   async cashPayment(
     @ConnectedSocket() client: Socket,
     @MessageBody() cashPaymentWsDto: CashPaymentWsDto,
-  ): Promise<WsResponse<PaymentsEntity>> {
+  ): Promise<WsResponse<CashPaymentResponseWsDto>> {
     return {
       event: 'cash-payment',
       data: await this.postsWsService.cashPayment(

@@ -1,16 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { OnPayDto } from './dto/on-pay.dto';
 import { WsDeviceSubscribeController } from './ws.device.subscribe.controller';
 import { DisconnectReason, Socket } from 'socket.io';
 import { WsResponse } from '@nestjs/websockets';
 import { KaspiCheckWsDto } from './dto/kaspi.check.ws.dto';
 import { KaspiPayWsDto } from './dto/kaspi.pay.ws.dto';
-import { CashPaymentWsDto } from './dto/cashPaymentWsDto';
 import { PaymentsService } from '../payments/payments.service';
-import {
-  PaymentsEntity,
-  PaymentType,
-} from '../payments/entities/payment.entity';
+import { PaymentType } from '../payments/entities/payment.entity';
+import { CashPaymentResponseWsDto } from './dto/cash-payment-response.ws.dto';
+import { CashSummator } from '../payments/cash-summator';
+import { CashPaymentWsDto } from './dto/cash-payment.ws.dto';
 
 @Injectable()
 export class PostsWsService {
@@ -18,10 +16,6 @@ export class PostsWsService {
     private readonly wsDeviceSubscribeController: WsDeviceSubscribeController,
     private readonly paymentsService: PaymentsService,
   ) {}
-
-  onPay(onPayDto: OnPayDto) {
-    return onPayDto;
-  }
 
   subscribe(deviceId: number, client: Socket): WsResponse<'OK'> {
     this.wsDeviceSubscribeController.set(deviceId, client);
@@ -47,12 +41,19 @@ export class PostsWsService {
   async cashPayment(
     deviceId: number,
     cashPaymentWsDto: CashPaymentWsDto,
-  ): Promise<PaymentsEntity> {
-    return await this.paymentsService.create({
-      sum: cashPaymentWsDto.sum + '',
-      type: PaymentType.CASH,
-      device: deviceId,
-      result: 0,
-    });
+  ): Promise<CashPaymentResponseWsDto> {
+    CashSummator.getInstance().sum(
+      deviceId,
+      +cashPaymentWsDto.sum,
+      async (sum: number) => {
+        await this.paymentsService.create({
+          sum: sum + '',
+          type: PaymentType.CASH,
+          device: deviceId,
+          result: 0,
+        });
+      },
+    );
+    return { status: 'OK' };
   }
 }
