@@ -37,7 +37,7 @@ export class PaymentsService {
             id: filter.devices !== undefined ? Any(filter.devices) : undefined,
             posts: {
               user: {
-                id: user.id,
+                id: user.role === UserRoles.ADMINISTRATOR ? undefined : user.id,
               },
             },
           },
