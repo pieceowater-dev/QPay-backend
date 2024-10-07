@@ -1,6 +1,6 @@
 import { PostEntity } from '../entities/post.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsNumberString, IsString } from 'class-validator';
 
 export class CreatePostDto extends PostEntity {
   @IsString()
@@ -11,7 +11,7 @@ export class CreatePostDto extends PostEntity {
   @ApiProperty({ required: true })
   address!: string;
 
-  @IsString()
+  @IsNumberString()
   @ApiProperty({ required: true })
   bin!: string;
 }
