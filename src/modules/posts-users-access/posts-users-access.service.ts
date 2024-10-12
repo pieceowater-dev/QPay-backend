@@ -7,6 +7,7 @@ import { PostEntity } from '../posts/entities/post.entity';
 import { UserEntity } from '../users/entities/user.entity';
 import { plainToInstance } from 'class-transformer';
 import { UpdateUserAccessByPostDto } from './dto/update-user-access-by-post.dto';
+import { UpdatePostAccessByUserDto } from './dto/update-post-access-by-user.dto';
 
 @Injectable()
 export class PostsUsersAccessService {
@@ -78,6 +79,39 @@ export class PostsUsersAccessService {
           .insert()
           .values(
             updateUserAccessByPostDto.users.map((user) => ({
+              user: { id: user },
+              post: { id: post },
+            })),
+          )
+          .execute();
+
+        return 'OK';
+      },
+    );
+  }
+
+  async updatePostAccessByUser(
+    user: number,
+    updatePostAccessByUserDto: UpdatePostAccessByUserDto,
+  ): Promise<string> {
+    console.log(user, updatePostAccessByUserDto);
+    return await this.postsUsersAccessRepository.manager.transaction(
+      async (em) => {
+        await em
+          .getRepository(PostsUsersAccess)
+          .createQueryBuilder()
+          .delete()
+          .where({
+            user,
+          })
+          .execute();
+
+        await em
+          .getRepository(PostsUsersAccess)
+          .createQueryBuilder()
+          .insert()
+          .values(
+            updatePostAccessByUserDto.posts.map((post) => ({
               user: { id: user },
               post: { id: post },
             })),
