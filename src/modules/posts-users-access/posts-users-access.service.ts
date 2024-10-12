@@ -94,7 +94,6 @@ export class PostsUsersAccessService {
     user: number,
     updatePostAccessByUserDto: UpdatePostAccessByUserDto,
   ): Promise<string> {
-    console.log(user, updatePostAccessByUserDto);
     return await this.postsUsersAccessRepository.manager.transaction(
       async (em) => {
         await em
