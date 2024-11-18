@@ -2,11 +2,13 @@ import { Socket } from 'socket.io';
 import { Injectable } from '@nestjs/common';
 import { CheckRequestKaspiDto } from '../kaspiapi/dto/check.request.kaspi.dto';
 import { PayRequestKaspiDto } from '../kaspiapi/dto/pay.request.kaspi.dto';
+import { ActionDevice } from './types/ActionDevice';
 
 @Injectable()
 export class WsDeviceSubscribeController {
   private socketIdToDeviceId = new Map<string, number>([]);
   private deviceIdToSocket = new Map<number, Socket>([]);
+  readonly deviceActionMap = new Map<string, ActionDevice>();
 
   log(): void {
     console.log(this.socketIdToDeviceId);
@@ -18,10 +20,6 @@ export class WsDeviceSubscribeController {
     this.deviceIdToSocket.set(deviceId, socket);
   }
 
-  getByDeviceId(deviceId: number): Socket {
-    return this.deviceIdToSocket.get(deviceId);
-  }
-
   deleteBySocketId(socketId: string): void {
     const deviceId = this.socketIdToDeviceId.get(socketId);
     if (deviceId !== undefined) {
@@ -30,12 +28,10 @@ export class WsDeviceSubscribeController {
     }
   }
 
-  readonly deviceActionMap = new Map<string, ActionDevice>();
-
   async checkDevice(
     deviceId: number,
     key: string,
-    data: CheckRequestKaspiDto,
+    data: CheckRequestKaspiDto & { key: string },
   ): Promise<string> {
     return await this.deviceRequest(deviceId, 'kaspi-check', key, data);
   }
@@ -43,7 +39,7 @@ export class WsDeviceSubscribeController {
   async payDevice(
     deviceId: number,
     key: string,
-    data: PayRequestKaspiDto,
+    data: PayRequestKaspiDto & { key: string },
   ): Promise<string> {
     return await this.deviceRequest(deviceId, 'kaspi-pay', key, data);
   }
@@ -73,7 +69,7 @@ export class WsDeviceSubscribeController {
         );
         return result;
       }),
-      this.wait(5000).then((e) => {
+      this.wait(10000).then((e) => {
         console.log(
           `[DEVICE-CHECK] TIMEOUT, deviceId: ${deviceId}, key: ${key}`,
         );
@@ -82,15 +78,15 @@ export class WsDeviceSubscribeController {
     ]);
   }
 
-  async wait(milliseconds: number): Promise<string> {
+  private async wait(milliseconds: number): Promise<string> {
     return await new Promise((resolve) => {
       setTimeout(() => {
         resolve('TIMEOUT');
       }, milliseconds);
     });
   }
-}
 
-interface ActionDevice {
-  resolver: (value: unknown) => void;
+  private getByDeviceId(deviceId: number): Socket {
+    return this.deviceIdToSocket.get(deviceId);
+  }
 }

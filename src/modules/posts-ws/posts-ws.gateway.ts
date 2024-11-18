@@ -39,13 +39,17 @@ export class PostsWsGateway implements OnGatewayConnection {
 
   @SubscribeMessage('kaspi-check')
   @UseGuards(AuthWsGuard)
-  kaspiCheck(@MessageBody() kaspiCheckWsDTO: KaspiCheckWsDto): void {
+  kaspiCheck(
+    @MessageBody() kaspiCheckWsDTO: KaspiCheckWsDto & { key: string },
+  ): void {
     return this.postsWsService.kaspiCheck(kaspiCheckWsDTO);
   }
 
   @SubscribeMessage('kaspi-pay')
   @UseGuards(AuthWsGuard)
-  kaspiPay(@MessageBody() kaspiPayWsDTO: KaspiPayWsDto): void {
+  kaspiPay(
+    @MessageBody() kaspiPayWsDTO: KaspiPayWsDto & { key: string },
+  ): void {
     return this.postsWsService.kaspiPay(kaspiPayWsDTO);
   }
 

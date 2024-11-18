@@ -26,16 +26,16 @@ export class PostsWsService {
     return { event: 'subscribe', data: 'OK' };
   }
 
-  kaspiCheck(kaspiCheckWsDto: KaspiCheckWsDto) {
+  kaspiCheck(kaspiCheckWsDto: KaspiCheckWsDto & { key: string }) {
     this.wsDeviceSubscribeController.deviceActionMap
-      .get(kaspiCheckWsDto.txn_id)
-      ?.resolver(kaspiCheckWsDto.txn_id);
+      .get(kaspiCheckWsDto.key)
+      ?.resolver(kaspiCheckWsDto.key);
   }
 
-  kaspiPay(kaspiPayWsDto: KaspiPayWsDto) {
+  kaspiPay(kaspiPayWsDto: KaspiPayWsDto & { key: string }) {
     this.wsDeviceSubscribeController.deviceActionMap
-      .get(kaspiPayWsDto.txn_id)
-      ?.resolver(kaspiPayWsDto.txn_id);
+      .get(kaspiPayWsDto.key)
+      ?.resolver(kaspiPayWsDto.key);
   }
 
   async cashPayment(

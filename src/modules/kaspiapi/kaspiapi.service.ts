@@ -31,16 +31,20 @@ export class KaspiapiService {
     console.log(
       `[KASPI-CHECK] Post: id: ${post?.id}, bin: ${post?.bin}, stopped: ${post?.stopped}, deleted: ${post?.deleted}`,
     );
+    const key = crypto.randomUUID();
+    console.log(post);
     const result: KaspiResult =
       post !== null && post.bin !== null && !post.stopped && !post.deleted
         ? await this.wsDeviceSubscribeController
-            .checkDevice(
-              +createKaspiapiDto.device_id,
-              createKaspiapiDto.txn_id,
-              createKaspiapiDto,
-            )
+            .checkDevice(+createKaspiapiDto.device_id, key, {
+              ...createKaspiapiDto,
+              key,
+            })
             .then(() => 0 as KaspiResult)
-            .catch(() => 1 as KaspiResult)
+            .catch((err) => {
+              console.log(err);
+              return 1;
+            })
         : 1;
 
     console.log(`[KASPI-CHECK] Device check result: ${result}`);
@@ -98,15 +102,15 @@ export class KaspiapiService {
     if (existsPayment) {
       return existsPayment;
     }
+    const key = crypto.randomUUID();
 
     const result: KaspiResult =
       post !== null && post.bin !== null && !post.stopped && !post.deleted
         ? await this.wsDeviceSubscribeController
-            .payDevice(
-              +createKaspiapiDto.device_id,
-              createKaspiapiDto.txn_id,
-              createKaspiapiDto,
-            )
+            .payDevice(+createKaspiapiDto.device_id, key, {
+              ...createKaspiapiDto,
+              key,
+            })
             .then(() => 0 as KaspiResult)
             .catch((e) => {
               console.log(e);
