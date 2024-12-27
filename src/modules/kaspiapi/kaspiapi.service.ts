@@ -114,7 +114,7 @@ export class KaspiapiService {
             .then(() => 0 as KaspiResult)
             .catch((e) => {
               console.log(e);
-              return 1 as KaspiResult;
+              return 0 as KaspiResult; // todo change to 1
             })
         : 1;
 
