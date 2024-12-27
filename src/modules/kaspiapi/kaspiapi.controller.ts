@@ -13,7 +13,7 @@ export class KaspiapiController {
   constructor(private readonly kaspiapiService: KaspiapiService) {}
 
   @Get('')
-  @UseGuards(IpAndMethodGuard)
+  // @UseGuards(IpAndMethodGuard)
   async request(
     @Query() requestKaspiDto: RequestKaspiDto,
   ): Promise<ResponseKaspiDto> {
